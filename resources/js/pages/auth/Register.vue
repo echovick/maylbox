@@ -14,42 +14,28 @@ import { store } from '@/routes/register';
 <template>
     <AuthBase
         title="Create an account"
-        description="Enter your details below to create your account"
+        description="Get started with your email in under 60 seconds"
     >
         <Head title="Register" />
 
         <Form
             v-bind="store.form()"
-            :reset-on-success="['password', 'password_confirmation']"
+            :reset-on-success="['password']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">Name</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="name"
-                        name="name"
-                        placeholder="Full name"
-                    />
-                    <InputError :message="errors.name" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">Email</Label>
                     <Input
                         id="email"
                         type="email"
                         required
-                        :tabindex="2"
+                        autofocus
+                        :tabindex="1"
                         autocomplete="email"
                         name="email"
-                        placeholder="email@example.com"
+                        placeholder="you@example.com"
                     />
                     <InputError :message="errors.email" />
                 </div>
@@ -60,37 +46,35 @@ import { store } from '@/routes/register';
                         id="password"
                         type="password"
                         required
-                        :tabindex="3"
+                        :tabindex="2"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Password"
+                        placeholder="Create a password"
                     />
                     <InputError :message="errors.password" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        required
-                        :tabindex="4"
-                        autocomplete="new-password"
-                        name="password_confirmation"
-                        placeholder="Confirm password"
-                    />
-                    <InputError :message="errors.password_confirmation" />
                 </div>
 
                 <Button
                     type="submit"
                     class="mt-2 w-full"
-                    tabindex="5"
+                    size="lg"
+                    tabindex="3"
                     :disabled="processing"
                     data-test="register-user-button"
                 >
                     <Spinner v-if="processing" />
-                    Create account
+                    Create Account & Continue
+                    <svg
+                        v-if="!processing"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="ml-2 h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
                 </Button>
             </div>
 

@@ -16,7 +16,7 @@ Route::get('dashboard', function () {
 
 Route::get('mail', function () {
     return Inertia::render('Mail');
-})->middleware(['auth', 'verified'])->name('mail');
+})->middleware(['auth'])->name('mail'); // Removed 'verified' for faster onboarding
 
 Route::get('account-setup', function () {
     return Inertia::render('AccountSetup', [

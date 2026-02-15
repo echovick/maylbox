@@ -146,7 +146,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        Features::emailVerification(),
+        // Features::emailVerification(), // Disabled for faster onboarding
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,9 +17,11 @@ const emit = defineEmits<{
 }>();
 
 // State
-const activeTab = ref('oauth');
+const email = ref('');
+const password = ref('');
 const isConnecting = ref(false);
 const error = ref<string | null>(null);
+const showAdvancedSettings = ref(false);
 
 // OAuth providers
 const oauthProviders = [
@@ -37,43 +39,54 @@ const oauthProviders = [
     },
 ];
 
-// IMAP form
-const imapForm = ref({
-    email: '',
-    password: '',
+// IMAP settings (for advanced mode)
+const imapSettings = ref({
     imapHost: '',
     imapPort: 993,
     smtpHost: '',
     smtpPort: 587,
-    name: '',
+});
+
+// Detect provider from email
+const detectedProvider = computed(() => {
+    const emailLower = email.value.toLowerCase();
+    if (emailLower.includes('@gmail.com')) return 'gmail';
+    if (emailLower.includes('@outlook.com') || emailLower.includes('@hotmail.com')) return 'outlook';
+    if (emailLower.includes('@yahoo.com')) return 'yahoo';
+    return null;
+});
+
+// Show OAuth suggestion
+const suggestOAuth = computed(() => {
+    return detectedProvider.value === 'gmail' || detectedProvider.value === 'outlook';
 });
 
 // Auto-detect IMAP settings based on email domain
 const detectImapSettings = () => {
-    const email = imapForm.value.email.toLowerCase();
+    const emailLower = email.value.toLowerCase();
 
-    if (email.includes('@gmail.com')) {
-        imapForm.value.imapHost = 'imap.gmail.com';
-        imapForm.value.imapPort = 993;
-        imapForm.value.smtpHost = 'smtp.gmail.com';
-        imapForm.value.smtpPort = 587;
-    } else if (email.includes('@outlook.com') || email.includes('@hotmail.com')) {
-        imapForm.value.imapHost = 'outlook.office365.com';
-        imapForm.value.imapPort = 993;
-        imapForm.value.smtpHost = 'smtp.office365.com';
-        imapForm.value.smtpPort = 587;
-    } else if (email.includes('@yahoo.com')) {
-        imapForm.value.imapHost = 'imap.mail.yahoo.com';
-        imapForm.value.imapPort = 993;
-        imapForm.value.smtpHost = 'smtp.mail.yahoo.com';
-        imapForm.value.smtpPort = 587;
+    if (emailLower.includes('@gmail.com')) {
+        imapSettings.value.imapHost = 'imap.gmail.com';
+        imapSettings.value.imapPort = 993;
+        imapSettings.value.smtpHost = 'smtp.gmail.com';
+        imapSettings.value.smtpPort = 587;
+    } else if (emailLower.includes('@outlook.com') || emailLower.includes('@hotmail.com')) {
+        imapSettings.value.imapHost = 'outlook.office365.com';
+        imapSettings.value.imapPort = 993;
+        imapSettings.value.smtpHost = 'smtp.office365.com';
+        imapSettings.value.smtpPort = 587;
+    } else if (emailLower.includes('@yahoo.com')) {
+        imapSettings.value.imapHost = 'imap.mail.yahoo.com';
+        imapSettings.value.imapPort = 993;
+        imapSettings.value.smtpHost = 'smtp.mail.yahoo.com';
+        imapSettings.value.smtpPort = 587;
     }
 };
 
 // Pre-fill email if provided
 onMounted(() => {
     if (props.prefillEmail) {
-        imapForm.value.email = props.prefillEmail;
+        email.value = props.prefillEmail;
         detectImapSettings();
     }
 });
@@ -106,13 +119,20 @@ const connectImap = () => {
     error.value = null;
 
     // Validate form
-    if (!imapForm.value.email || !imapForm.value.password) {
+    if (!email.value || !password.value) {
         error.value = 'Email and password are required';
         return;
     }
 
-    if (!imapForm.value.imapHost || !imapForm.value.smtpHost) {
-        error.value = 'IMAP and SMTP hosts are required';
+    // Auto-detect settings if not already done
+    if (!imapSettings.value.imapHost) {
+        detectImapSettings();
+    }
+
+    // Check if settings were detected
+    if (!imapSettings.value.imapHost || !imapSettings.value.smtpHost) {
+        error.value = 'Could not auto-detect email settings. Please use advanced settings.';
+        showAdvancedSettings.value = true;
         return;
     }
 
@@ -121,16 +141,16 @@ const connectImap = () => {
     // Prepare account data
     const accountData = {
         type: 'imap',
-        email: imapForm.value.email,
-        name: imapForm.value.name || imapForm.value.email,
-        imap_host: imapForm.value.imapHost,
-        imap_port: imapForm.value.imapPort,
+        email: email.value,
+        name: email.value,
+        imap_host: imapSettings.value.imapHost,
+        imap_port: imapSettings.value.imapPort,
         imap_encryption: 'ssl',
-        imap_password: imapForm.value.password,
-        smtp_host: imapForm.value.smtpHost,
-        smtp_port: imapForm.value.smtpPort,
+        imap_password: password.value,
+        smtp_host: imapSettings.value.smtpHost,
+        smtp_port: imapSettings.value.smtpPort,
         smtp_encryption: 'tls',
-        smtp_password: imapForm.value.password,
+        smtp_password: password.value,
     };
 
     // Emit to parent component which will handle the API call
