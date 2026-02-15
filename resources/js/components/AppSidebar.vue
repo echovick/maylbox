@@ -18,11 +18,7 @@ import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+    // Removed Dashboard link - Mail app doesn't need it
 ];
 
 const footerNavItems: NavItem[] = [

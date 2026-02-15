@@ -79,21 +79,21 @@ const handleAddAccount = () => {
 <template>
     <div class="flex h-full w-64 flex-col border-r border-sidebar-border bg-background">
         <!-- Account Switcher -->
-        <div class="border-b border-sidebar-border p-4">
+        <div class="border-b border-sidebar-border px-6 py-5">
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button
                         variant="outline"
-                        class="w-full justify-between"
+                        class="h-auto w-full justify-between py-3"
                     >
-                        <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="flex items-center gap-3 overflow-hidden">
                             <div
-                                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
                             >
                                 {{ currentAccount?.email.substring(0, 2).toUpperCase() }}
                             </div>
                             <div class="min-w-0 flex-1 text-left">
-                                <div class="truncate text-sm font-medium">
+                                <div class="truncate text-sm font-semibold">
                                     {{ currentAccount?.name }}
                                 </div>
                                 <div class="truncate text-xs text-muted-foreground">

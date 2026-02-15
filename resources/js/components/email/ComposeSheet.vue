@@ -124,41 +124,21 @@ const triggerFileSelect = () => {
 <template>
     <Sheet :open="isComposing" @update:open="isComposing ? closeCompose() : null">
         <SheetContent
-            side="bottom"
-            class="h-[90vh] sm:h-[80vh] sm:max-w-2xl sm:rounded-t-xl"
+            side="right"
+            class="w-full p-6 sm:max-w-2xl"
         >
             <SheetHeader class="border-b border-sidebar-border pb-4">
-                <div class="flex items-center justify-between">
-                    <SheetTitle>
-                        {{
-                            draft.mode === 'reply'
-                                ? 'Reply'
-                                : draft.mode === 'replyAll'
-                                  ? 'Reply All'
-                                  : draft.mode === 'forward'
-                                    ? 'Forward'
-                                    : 'New Message'
-                        }}
-                    </SheetTitle>
-                    <div class="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            @click="handleClose"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M18 6 6 18M6 6l12 12" />
-                            </svg>
-                        </Button>
-                    </div>
-                </div>
+                <SheetTitle>
+                    {{
+                        draft.mode === 'reply'
+                            ? 'Reply'
+                            : draft.mode === 'replyAll'
+                              ? 'Reply All'
+                              : draft.mode === 'forward'
+                                ? 'Forward'
+                                : 'New Message'
+                    }}
+                </SheetTitle>
             </SheetHeader>
 
             <div class="flex h-[calc(100%-8rem)] flex-col gap-4 overflow-hidden pt-4">

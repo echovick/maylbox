@@ -135,12 +135,12 @@ const handleDeleteLabel = (labelId: string) => {
     <Head title="Mail" />
 
     <AppLayout :show-breadcrumbs="false">
-        <div class="flex h-full overflow-hidden">
+        <div class="flex h-screen overflow-hidden">
             <!-- Sidebar -->
             <MailSidebar @open-label-manager="handleOpenLabelManager" />
 
             <!-- Main Content Area -->
-            <div class="flex flex-1 flex-col overflow-hidden">
+            <div class="flex flex-1 flex-col overflow-hidden max-h-screen">
                 <!-- Sync Status Banner (shown when syncing) -->
                 <div
                     v-if="isSyncing"
@@ -445,11 +445,11 @@ const handleDeleteLabel = (labelId: string) => {
 
             <!-- Main Content -->
             <div class="flex flex-1 overflow-hidden">
-                <!-- Email List -->
+                <!-- Email List - 30% width -->
                 <div
                     :class="[
-                        'flex-1 overflow-hidden border-r border-sidebar-border',
-                        selectedEmail && showEmailViewer ? 'hidden lg:block lg:w-96' : '',
+                        'w-full overflow-y-auto border-r border-sidebar-border lg:w-[30%]',
+                        selectedEmail && showEmailViewer ? 'hidden lg:block' : '',
                     ]"
                 >
                     <EmailList
@@ -459,11 +459,11 @@ const handleDeleteLabel = (labelId: string) => {
                     />
                 </div>
 
-                <!-- Email Viewer (Thread or Single) -->
+                <!-- Email Viewer (Thread or Single) - 70% width -->
                 <div
                     v-if="selectedEmail"
                     :class="[
-                        'flex-1 overflow-hidden',
+                        'w-full overflow-y-auto lg:w-[70%]',
                         !showEmailViewer ? 'hidden lg:block' : '',
                     ]"
                 >
