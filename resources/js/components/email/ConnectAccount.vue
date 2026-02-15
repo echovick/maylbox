@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{
     prefillEmail?: string;
@@ -161,197 +161,165 @@ const connectImap = () => {
 
 <template>
     <div class="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-        <Card class="w-full max-w-2xl">
+        <Card class="w-full max-w-lg">
             <CardHeader>
-                <CardTitle class="text-2xl">Connect Your Email Account</CardTitle>
+                <CardTitle class="text-2xl">Connect your email account</CardTitle>
                 <CardDescription>
-                    Get started by connecting your email account. Choose OAuth for quick setup or
-                    IMAP for custom configurations.
+                    {{ suggestOAuth ? 'We recommend using OAuth for quick and secure setup' : 'Enter your email credentials to get started' }}
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <!-- Tab Switcher -->
-                <div class="mb-6 grid w-full grid-cols-2 gap-2 rounded-lg bg-muted p-1">
+            <CardContent class="space-y-6">
+                <Alert v-if="error" variant="destructive">
+                    <AlertDescription>{{ error }}</AlertDescription>
+                </Alert>
+
+                <!-- Email & Password Form -->
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <Label for="email">Your Email</Label>
+                        <Input
+                            id="email"
+                            v-model="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            :disabled="isConnecting"
+                            @blur="detectImapSettings"
+                        />
+                        <p v-if="suggestOAuth" class="text-xs text-muted-foreground">
+                            ✨ {{ detectedProvider === 'gmail' ? 'Gmail' : 'Outlook' }} detected - OAuth recommended below
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <Label for="password">Password</Label>
+                        <Input
+                            id="password"
+                            v-model="password"
+                            type="password"
+                            placeholder="••••••••"
+                            :disabled="isConnecting"
+                        />
+                        <p v-if="!suggestOAuth && imapSettings.imapHost" class="text-xs text-muted-foreground">
+                            ✨ Settings auto-detected for {{ email }}
+                        </p>
+                    </div>
+
                     <Button
-                        :variant="activeTab === 'oauth' ? 'default' : 'ghost'"
-                        @click="activeTab = 'oauth'"
+                        class="w-full"
+                        size="lg"
+                        :disabled="isConnecting || !email || !password"
+                        @click="connectImap"
                     >
-                        OAuth (Recommended)
-                    </Button>
-                    <Button
-                        :variant="activeTab === 'imap' ? 'default' : 'ghost'"
-                        @click="activeTab = 'imap'"
-                    >
-                        IMAP/SMTP
+                        <Spinner v-if="isConnecting" class="mr-2" />
+                        Connect Account
                     </Button>
                 </div>
 
-                <!-- OAuth Tab -->
-                <div v-if="activeTab === 'oauth'" class="space-y-4">
-                        <Alert v-if="error" variant="destructive">
-                            <AlertDescription>{{ error }}</AlertDescription>
-                        </Alert>
+                <!-- Divider -->
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <span class="w-full border-t" />
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase">
+                        <span class="bg-background px-2 text-muted-foreground">Or</span>
+                    </div>
+                </div>
 
-                        <p class="text-sm text-muted-foreground">
-                            Connect with one click. Maylbox uses OAuth 2.0 for secure authentication
-                            without storing your password.
-                        </p>
-
-                        <div class="grid gap-4">
-                            <Button
-                                v-for="provider in oauthProviders"
-                                :key="provider.id"
-                                variant="outline"
-                                size="lg"
-                                class="h-auto py-4"
-                                :disabled="isConnecting"
-                                @click="connectOAuth(provider.id)"
+                <!-- OAuth Buttons -->
+                <div class="space-y-3">
+                    <Button
+                        v-for="provider in oauthProviders"
+                        :key="provider.id"
+                        variant="outline"
+                        size="lg"
+                        class="w-full justify-start h-auto py-3"
+                        :disabled="isConnecting"
+                        @click="connectOAuth(provider.id)"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                :class="[
+                                    provider.color,
+                                    'flex h-10 w-10 shrink-0 items-center justify-center rounded',
+                                ]"
                             >
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        :class="[
-                                            provider.color,
-                                            'flex h-10 w-10 items-center justify-center rounded',
-                                        ]"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="white"
-                                            class="h-6 w-6"
-                                        >
-                                            <path :d="provider.icon" />
-                                        </svg>
-                                    </div>
-                                    <div class="text-left">
-                                        <div class="font-medium">Continue with {{ provider.name }}</div>
-                                        <div class="text-xs text-muted-foreground">
-                                            Quick and secure setup
-                                        </div>
-                                    </div>
-                                </div>
-                            </Button>
-                        </div>
-
-                        <p class="text-center text-xs text-muted-foreground">
-                            By connecting, you agree to Maylbox's access to your email for syncing and
-                            sending.
-                        </p>
-                </div>
-
-                <!-- IMAP Tab -->
-                <div v-if="activeTab === 'imap'" class="space-y-4">
-                        <Alert v-if="error" variant="destructive">
-                            <AlertDescription>{{ error }}</AlertDescription>
-                        </Alert>
-
-                        <p class="text-sm text-muted-foreground">
-                            Connect using IMAP/SMTP for custom email providers or self-hosted servers.
-                        </p>
-
-                        <div class="space-y-4">
-                            <!-- Email & Password -->
-                            <div class="grid gap-4 sm:grid-cols-2">
-                                <div class="space-y-2">
-                                    <Label for="email">Email Address</Label>
-                                    <Input
-                                        id="email"
-                                        v-model="imapForm.email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        @blur="detectImapSettings"
-                                    />
-                                </div>
-                                <div class="space-y-2">
-                                    <Label for="password">Password</Label>
-                                    <Input
-                                        id="password"
-                                        v-model="imapForm.password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Account Name -->
-                            <div class="space-y-2">
-                                <Label for="name">Account Name (Optional)</Label>
-                                <Input
-                                    id="name"
-                                    v-model="imapForm.name"
-                                    placeholder="My Work Email"
-                                />
-                            </div>
-
-                            <!-- IMAP Settings -->
-                            <div class="space-y-2">
-                                <Label class="text-sm font-semibold">IMAP Settings (Incoming Mail)</Label>
-                                <div class="grid gap-4 sm:grid-cols-3">
-                                    <div class="space-y-2 sm:col-span-2">
-                                        <Label for="imapHost" class="text-xs">Host</Label>
-                                        <Input
-                                            id="imapHost"
-                                            v-model="imapForm.imapHost"
-                                            placeholder="imap.example.com"
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label for="imapPort" class="text-xs">Port</Label>
-                                        <Input
-                                            id="imapPort"
-                                            v-model.number="imapForm.imapPort"
-                                            type="number"
-                                            placeholder="993"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SMTP Settings -->
-                            <div class="space-y-2">
-                                <Label class="text-sm font-semibold">SMTP Settings (Outgoing Mail)</Label>
-                                <div class="grid gap-4 sm:grid-cols-3">
-                                    <div class="space-y-2 sm:col-span-2">
-                                        <Label for="smtpHost" class="text-xs">Host</Label>
-                                        <Input
-                                            id="smtpHost"
-                                            v-model="imapForm.smtpHost"
-                                            placeholder="smtp.example.com"
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label for="smtpPort" class="text-xs">Port</Label>
-                                        <Input
-                                            id="smtpPort"
-                                            v-model.number="imapForm.smtpPort"
-                                            type="number"
-                                            placeholder="587"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Alert>
-                                <AlertDescription class="text-xs">
-                                    <strong>Note:</strong> Settings are auto-detected for Gmail, Outlook, and Yahoo.
-                                    For other providers, check your email provider's documentation.
-                                </AlertDescription>
-                            </Alert>
-
-                            <div class="flex gap-2">
-                                <Button
-                                    class="flex-1"
-                                    :disabled="isConnecting"
-                                    @click="connectImap"
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="white"
+                                    class="h-6 w-6"
                                 >
-                                    {{ isConnecting ? 'Connecting...' : 'Connect Account' }}
-                                </Button>
-                                <Button variant="outline" @click="emit('close')">
-                                    Cancel
-                                </Button>
+                                    <path :d="provider.icon" />
+                                </svg>
+                            </div>
+                            <div class="text-left">
+                                <div class="font-medium">Continue with {{ provider.name }}</div>
+                                <div class="text-xs text-muted-foreground">
+                                    Quick and secure OAuth setup
+                                </div>
                             </div>
                         </div>
+                    </Button>
                 </div>
+
+                <!-- Advanced Settings Toggle -->
+                <div v-if="!suggestOAuth" class="text-center">
+                    <button
+                        @click="showAdvancedSettings = !showAdvancedSettings"
+                        class="text-sm text-muted-foreground hover:text-foreground underline"
+                    >
+                        {{ showAdvancedSettings ? 'Hide' : 'Show' }} advanced settings
+                    </button>
+                </div>
+
+                <!-- Advanced IMAP/SMTP Settings -->
+                <div v-if="showAdvancedSettings" class="space-y-4 rounded-lg border p-4">
+                    <p class="text-sm font-medium">Manual IMAP/SMTP Configuration</p>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="space-y-2">
+                            <Label for="imapHost" class="text-xs">IMAP Host</Label>
+                            <Input
+                                id="imapHost"
+                                v-model="imapSettings.imapHost"
+                                placeholder="imap.example.com"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <Label for="imapPort" class="text-xs">IMAP Port</Label>
+                            <Input
+                                id="imapPort"
+                                v-model.number="imapSettings.imapPort"
+                                type="number"
+                                placeholder="993"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="space-y-2">
+                            <Label for="smtpHost" class="text-xs">SMTP Host</Label>
+                            <Input
+                                id="smtpHost"
+                                v-model="imapSettings.smtpHost"
+                                placeholder="smtp.example.com"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <Label for="smtpPort" class="text-xs">SMTP Port</Label>
+                            <Input
+                                id="smtpPort"
+                                v-model.number="imapSettings.smtpPort"
+                                type="number"
+                                placeholder="587"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-center text-xs text-muted-foreground">
+                    By connecting, you agree to Maylbox's access to your email for syncing and sending.
+                </p>
             </CardContent>
         </Card>
     </div>
