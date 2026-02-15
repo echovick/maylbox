@@ -1,254 +1,287 @@
-# Maylbox.co - Product Requirements Document
+Alright. No fluff. No startup cosplay. Let’s write something that could actually guide engineering.
 
-## Executive Summary
+Below is a clean, execution-ready Product Requirements Document for **Maylbox**.
 
-**Maylbox.co** is a modern webmail client designed to be a "sexier version of webmail" - combining the power of traditional email with a delightful, streamlined user experience. The core mission is to minimize friction: users should go from signup to sending their first email in fewer than 5 clicks.
+---
 
-## Product Vision
+# Product Requirements Document (PRD)
 
-### Problem Statement
-Traditional webmail clients are cluttered, slow, and require too many steps to accomplish basic tasks. Users face:
-- Complex onboarding processes
-- Unintuitive interfaces
-- Slow performance
-- Overwhelming feature sets that obscure core functionality
+## Product Name
 
-### Solution
-Maylbox.co provides a clean, fast, and intuitive email experience that:
-- Streamlines onboarding (signup � first email in <5 clicks)
-- Offers a modern, beautiful interface
-- Delivers instant performance through smart caching and background sync
-- Focuses on core email workflows while keeping advanced features accessible
+Maylbox
 
-## Target Users
+## 1. Product Overview
 
-### Primary Personas
+Maylbox is a modern, AI-ready email client that allows users to connect existing email accounts (custom domains, Gmail, Microsoft, etc.) and access them through a fast, clean, intelligent interface.
 
-**1. The Switcher**
-- Currently uses Gmail, Outlook, or other webmail
-- Frustrated with cluttered interfaces and privacy concerns
-- Values simplicity and speed
-- Willing to try new tools that improve their workflow
+Maylbox does not provide email hosting. It acts as a secure sync and control layer on top of existing providers using OAuth (where available) and IMAP/SMTP.
 
-**2. The Professional**
-- Manages multiple email accounts
-- Needs reliable, fast email access
-- Values clean, distraction-free interface
-- Wants advanced features without complexity
+Core promise:
+Sign up → connect inbox → send email in under 60 seconds.
 
-**3. The Privacy-Conscious**
-- Concerned about data mining in free email services
-- Wants control over their data
-- Prefers self-hosted or privacy-first solutions
-- Technical enough to appreciate IMAP/SMTP standards
+---
 
-## Core Features
+## 2. Problem Statement
 
-### MVP (Phase 1)
+Many users purchase custom domain emails through providers like shared hosting platforms. While functional, the default webmail interfaces are outdated, slow, and unintuitive.
 
-#### 1. Authentication & Onboarding
-- **Quick signup** with email/password
-- **Instant email account connection** via IMAP/SMTP
-- **Auto-configuration** for popular providers (Gmail, Outlook, etc.)
-- **Email verification** (optional, skippable for speed)
+Users face:
 
-#### 2. Email Management
-- **Inbox view** with threaded conversations
-- **Email composition** with rich text editor
-- **Send/receive** via SMTP/IMAP
-- **Attachments** support (send/receive)
-- **Basic folders**: Inbox, Sent, Drafts, Trash, Spam
-- **Search** across all emails
+- Poor UI/UX
+- Complicated forwarding setup
+- Manual SMTP/IMAP configuration
+- Difficulty consolidating multiple inboxes
+- Lack of intelligent workflow features
 
-#### 3. Multiple Accounts
-- **Add multiple email accounts**
-- **Unified inbox** (optional)
-- **Per-account views**
-- **Account switching**
+Switching to premium providers like Google Workspace solves UX but increases cost and vendor lock-in.
 
-#### 4. Core UI/UX
-- **Responsive design** (desktop-first, mobile-friendly)
-- **Dark/light mode**
-- **Keyboard shortcuts**
-- **Real-time updates** for new emails
-- **Optimistic UI** updates
+There is a gap for a seamless, intelligent, provider-agnostic email client.
 
-### Phase 2 (Post-MVP)
+---
 
-#### 1. Advanced Email Features
-- **Labels/tags** (in addition to folders)
-- **Email filters/rules**
-- **Snooze emails**
-- **Templates**
-- **Email scheduling**
-- **Read receipts**
+## 3. Target Users
 
-#### 2. Productivity Features
-- **Contact management**
-- **Signatures** (per account)
-- **Quick replies**
-- **Email reminders**
-- **Calendar integration** (view only)
+Primary:
 
-#### 3. Collaboration
-- **Shared inboxes** (team accounts)
-- **Email delegation**
-- **Notes on conversations**
-- **Internal email sharing**
+- Founders and SMB owners using custom domain email via shared hosting
+- Agencies managing multiple client inboxes
+- Freelancers with multiple domain emails
 
-### Phase 3 (Future)
+Secondary:
 
-- **Mobile apps** (iOS/Android)
-- **Desktop apps** (Electron/Tauri)
-- **Browser extensions**
-- **Advanced search** (natural language)
-- **AI features** (smart compose, summarization)
-- **Custom domains**
-- **Email hosting** (optional paid service)
+- Power users wanting AI-first inbox management
+- Users who dislike Google Workspace pricing or ecosystem
 
-## User Experience Goals
+---
 
-### The "5-Click Rule"
-From landing page to sending first email in 5 clicks:
-1. Click "Sign Up"
-2. Enter credentials & submit
-3. Connect email account (auto-detected)
-4. Click "Compose"
-5. Send email
+## 4. Product Goals
 
-### Performance Benchmarks
-- **Page load**: <1s (initial)
-- **Inbox load**: <500ms
-- **Email open**: <200ms
-- **Compose open**: <100ms
-- **Search results**: <300ms
+1. Enable inbox connection in ≤ 3 steps.
+2. Hide all technical configuration unless required.
+3. Deliver sub-2 second perceived load time.
+4. Provide modern UI comparable to Gmail-level usability.
+5. Enable extensibility for AI automation and workflow features.
 
-### Design Principles
-1. **Speed First**: Every interaction should feel instant
-2. **Clarity Over Features**: Hide complexity, surface what matters
-3. **Beautiful Defaults**: Works great out of the box
-4. **Progressive Enhancement**: Advanced features don't clutter core experience
-5. **Accessibility**: WCAG 2.1 AA compliance
+---
 
-## Technical Requirements
+## 5. Non-Goals (Phase 1)
 
-### Frontend
-- **Framework**: Vue 3 + Inertia.js (current stack)
-- **UI Library**: Reka UI + Tailwind CSS (current)
-- **State Management**: Vue Composables + useVueuse
-- **Rich Text**: Tiptap or Lexical
-- **File Uploads**: Drag-and-drop, paste from clipboard
-- **Real-time**: Laravel Echo + WebSockets (or Server-Sent Events)
+- Running mail servers
+- Managing IP reputation
+- Email hosting infrastructure
+- Competing on delivery infrastructure
 
-### Backend
-- **Framework**: Laravel 12 (current)
-- **Mail Protocol**: IMAP (receive), SMTP (send)
-- **Queue System**: Laravel Queues (Redis/Database)
-- **Cache**: Redis (email metadata, user sessions)
-- **Storage**: S3-compatible (attachments)
-- **Database**: PostgreSQL (production), SQLite (dev)
+Maylbox is a client + sync layer, not a provider.
 
-### Security
-- **OAuth 2.0**: For Gmail, Outlook account connections
-- **Encrypted Storage**: Email credentials encrypted at rest
-- **HTTPS Only**: All traffic encrypted
-- **CSRF Protection**: Laravel built-in
-- **Rate Limiting**: API and email sending
-- **2FA**: TOTP support (already implemented)
+---
 
-### Email Protocol Support
-- **IMAP**: For receiving/syncing emails
-- **SMTP**: For sending emails
-- **OAuth 2.0**: For Gmail, Microsoft, Yahoo
-- **App Passwords**: For providers requiring them
-- **Auto-Discovery**: Autoconfig/Autodiscover for provider settings
+## 6. Core Features (Phase 1 – MVP)
 
-## Database Schema (High-Level)
+### 6.1 Seamless Account Connection
 
-### Core Entities
-- **Users**: Authentication & profile
-- **EmailAccounts**: IMAP/SMTP credentials, settings
-- **Emails**: Message content, metadata
-- **EmailThreads**: Conversation grouping
-- **Folders**: Inbox, Sent, custom folders
-- **Attachments**: File metadata & storage links
-- **Contacts**: Email addresses, names
-- **Labels**: User-defined tags
-- **Filters**: Email automation rules
+#### Supported Methods
 
-## Success Metrics
+1. OAuth (Priority)
+    - Gmail
+    - Microsoft 365 / Outlook
+    - Yahoo
 
-### Primary KPIs
-- **Time to First Email Sent**: <2 minutes from signup
-- **Daily Active Users (DAU)**
-- **Email Send Success Rate**: >99%
-- **Email Sync Latency**: <30 seconds for new emails
-- **User Retention**: 7-day, 30-day cohorts
+2. Smart IMAP Auto-Config
+    - User enters email + password
+    - System performs:
+        - MX record lookup
+        - Provider preset detection
+        - Port auto-detection
 
-### Secondary Metrics
-- **Average Emails Sent per User per Day**
-- **Email Account Connections per User**
-- **Search Usage Rate**
-- **Feature Adoption**: Filters, labels, shortcuts
-- **Performance**: P95 load times
+    - Attempts secure connection
+    - Falls back to advanced settings only if auto-config fails
 
-## Risk & Mitigation
+Users never see IMAP/SMTP fields unless connection fails.
 
-### Technical Risks
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| IMAP provider rate limits | High | Implement smart polling, respect provider limits |
-| Email storage costs | Medium | Metadata-only storage, attachment compression |
-| OAuth token expiration | Medium | Automatic refresh token handling |
-| Spam/abuse | High | Rate limiting, email verification, abuse detection |
+---
 
-### Product Risks
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| User trust (new product) | High | Clear privacy policy, open-source consideration |
-| Provider blocking | High | Respect RFC standards, implement backoff |
-| Feature bloat | Medium | Strict adherence to "5-click rule" philosophy |
+### 6.2 Mail Sync Engine
 
-## Launch Plan
+Architecture:
 
-### Beta Phase (Week 1-4)
-- Invite-only signups
-- Support for Gmail, Outlook, generic IMAP
-- Core email features only
-- Gather feedback, iterate quickly
+IMAP Provider → Maylbox Sync Engine → Internal Mail Store → API → Frontend
 
-### Public Launch (Week 5-8)
-- Open signups
-- Marketing campaign
-- Documentation & tutorials
-- Support for all major providers
+Responsibilities:
 
-### Growth Phase (Week 9+)
-- Phase 2 features rollout
-- Performance optimizations
-- Mobile-responsive refinements
-- Community building
+- Fetch last 30 days immediately
+- Background sync older mail
+- Track UID validity
+- Sync flags (read/unread, starred, etc.)
+- Send mail via SMTP or provider API
+- Maintain connection pooling
 
-## Open Questions
+System must:
 
-1. **Monetization**: Free tier vs. paid plans? Storage limits?
-2. **Email Hosting**: Should we offer @maylbox.co addresses?
-3. **Spam Filtering**: Client-side ML vs. server-side processing?
-4. **Calendar Integration**: Full feature or read-only?
-5. **Branding**: Color palette, logo finalization?
+- Retry gracefully
+- Handle provider rate limits
+- Log sync errors without exposing credentials
 
-## Appendix
+---
 
-### Competitive Analysis
-- **Gmail**: Most popular, but cluttered and privacy concerns
-- **Outlook**: Enterprise-focused, heavy interface
-- **Superhuman**: Fast but expensive ($30/month), keyboard-centric
-- **Hey**: Opinionated workflows, requires Hey email address
-- **Fastmail**: Solid but dated UI
-- **ProtonMail**: Privacy-focused but slow
+### 6.3 Secure Credential Handling
 
-### Inspiration
-- **Superhuman**: Speed and keyboard shortcuts
-- **Linear**: Clean, fast, delightful UX
-- **Vercel Dashboard**: Modern, minimalist design
-- **Hey**: Bold opinions on email workflows
+- Encrypt credentials at rest (AES-256 or equivalent)
+- Key management separate from database
+- No plaintext logging
+- OAuth tokens stored securely
+- Credential rotation supported
+- Strict access control policies
+
+Security breach impact must be minimized by architecture.
+
+---
+
+### 6.4 Inbox Experience
+
+Core Requirements:
+
+- Minimal, fast interface
+- Multi-account support
+- Unified inbox (optional toggle)
+- Categories (Primary, Clients, Finance, etc.)
+- Fast search (indexed locally in Maylbox store)
+- Threaded conversations
+- Real-time unread indicators
+
+Perceived performance target:
+Inbox visible within 2 seconds after login.
+
+---
+
+### 6.5 Send & Compose
+
+- Rich text compose
+- Attachments
+- Multiple identities per account
+- SMTP sending with delivery feedback
+- Draft autosave
+- Reply / Reply All / Forward
+
+Future support for AI-generated replies.
+
+---
+
+## 7. UX Principles
+
+1. No configuration vocabulary on onboarding.
+2. No settings before inbox.
+3. Progressive disclosure for advanced users.
+4. Fewer decisions = better experience.
+5. Modern, calm UI (Notion-like clarity, Gmail-level practicality).
+
+First screen after connection = Inbox.
+
+---
+
+## 8. Performance Requirements
+
+- First inbox render: ≤ 2 seconds
+- Account connection flow: ≤ 60 seconds
+- Sync engine must handle:
+    - 10k emails per account
+    - Background indexing
+
+- Zero UI blocking during full mailbox sync
+
+---
+
+## 9. System Architecture
+
+### Components
+
+1. Authentication Layer
+2. Provider Detection Engine
+    - MX lookup service
+    - Provider preset database
+
+3. Sync Engine Workers
+4. Mail Storage Database
+5. Search Index (e.g., full-text engine)
+6. API Layer
+7. Frontend App
+
+Background jobs required for:
+
+- Incremental sync
+- Attachment processing
+- Indexing
+- Retry queues
+
+---
+
+## 10. Risks
+
+1. IMAP edge case handling complexity
+2. Provider throttling or blocking
+3. Credential breach risk
+4. Performance bottlenecks with large mailboxes
+5. User expectation comparison to Gmail
+
+Mitigation:
+
+- Build robust retry logic
+- Strict encryption policy
+- Start with limited provider support
+- Test heavily on shared hosting providers
+
+---
+
+## 11. Future Phases
+
+### Phase 2 – Intelligence Layer
+
+- AI email summarization
+- Smart reply suggestions
+- Auto-categorization
+- Follow-up reminders
+- Snooze functionality
+
+### Phase 3 – Workflow Layer
+
+- Email → Task conversion
+- Email → CRM record
+- Kanban-style inbox
+- Shared team inbox
+- Automation rules engine
+
+At this stage, Maylbox becomes more than a client — it becomes a communication operating layer.
+
+---
+
+## 12. Success Metrics
+
+- Time to first sent email
+- Inbox connection success rate
+- Weekly active users
+- Sync error rate
+- Retention after 30 days
+
+---
+
+## 13. Strategic Positioning
+
+Maylbox is not:
+
+- An email hosting provider
+- A Gmail clone
+
+Maylbox is:
+A seamless, intelligent inbox for custom-domain users who want modern UX without switching providers.
+
+Long-term vision:
+Turn email from a passive inbox into an actionable workflow surface.
+
+---
+
+This is buildable.
+
+Hard? Yes.
+Infrastructure nightmare? No.
+Execution-sensitive? Absolutely.
+
+If you want next, we can break this into a 12-week build roadmap with technical stack recommendations and infra sizing assumptions.
