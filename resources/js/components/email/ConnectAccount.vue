@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 const emit = defineEmits<{
     close: [];
@@ -124,14 +124,24 @@ const connectImap = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs v-model="activeTab" default-value="oauth">
-                    <TabsList class="grid w-full grid-cols-2">
-                        <TabsTrigger value="oauth">OAuth (Recommended)</TabsTrigger>
-                        <TabsTrigger value="imap">IMAP/SMTP</TabsTrigger>
-                    </TabsList>
+                <!-- Tab Switcher -->
+                <div class="mb-6 grid w-full grid-cols-2 gap-2 rounded-lg bg-muted p-1">
+                    <Button
+                        :variant="activeTab === 'oauth' ? 'default' : 'ghost'"
+                        @click="activeTab = 'oauth'"
+                    >
+                        OAuth (Recommended)
+                    </Button>
+                    <Button
+                        :variant="activeTab === 'imap' ? 'default' : 'ghost'"
+                        @click="activeTab = 'imap'"
+                    >
+                        IMAP/SMTP
+                    </Button>
+                </div>
 
-                    <!-- OAuth Tab -->
-                    <TabsContent value="oauth" class="space-y-4">
+                <!-- OAuth Tab -->
+                <div v-if="activeTab === 'oauth'" class="space-y-4">
                         <Alert v-if="error" variant="destructive">
                             <AlertDescription>{{ error }}</AlertDescription>
                         </Alert>
@@ -181,10 +191,10 @@ const connectImap = () => {
                             By connecting, you agree to Maylbox's access to your email for syncing and
                             sending.
                         </p>
-                    </TabsContent>
+                </div>
 
-                    <!-- IMAP Tab -->
-                    <TabsContent value="imap" class="space-y-4">
+                <!-- IMAP Tab -->
+                <div v-if="activeTab === 'imap'" class="space-y-4">
                         <Alert v-if="error" variant="destructive">
                             <AlertDescription>{{ error }}</AlertDescription>
                         </Alert>
@@ -295,8 +305,7 @@ const connectImap = () => {
                                 </Button>
                             </div>
                         </div>
-                    </TabsContent>
-                </Tabs>
+                </div>
             </CardContent>
         </Card>
     </div>
