@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import type { Email, EmailSearchParams, Folder, EmailThread } from '@/types/email';
+import type { Email, EmailSearchParams, Folder, EmailThread, Label } from '@/types/email';
 import {
     dummyEmails,
     dummyFolders,
@@ -13,6 +13,10 @@ const emails = ref<Email[]>([...dummyEmails]);
 const selectedEmailId = ref<string | null>(null);
 const currentFolderId = ref<string>('folder-1'); // Default to Inbox
 const currentAccountId = ref<string>('1'); // Default to first account
+const searchQuery = ref<string>('');
+const isSearching = ref<boolean>(false);
+const currentLabelId = ref<string | null>(null); // For filtering by label
+const labels = ref([...dummyLabels]);
 
 export function useEmails() {
     // Computed
@@ -25,11 +29,43 @@ export function useEmails() {
     });
 
     const filteredEmails = computed(() => {
-        return emails.value.filter(
-            email =>
-                email.folderId === currentFolderId.value &&
-                email.accountId === currentAccountId.value,
-        );
+        let results = emails.value;
+
+        // Filter by label if one is selected (takes priority over folder)
+        if (currentLabelId.value) {
+            results = results.filter(email =>
+                email.labels?.some(label => label.id === currentLabelId.value)
+            );
+            // Still filter by account
+            results = results.filter(email => email.accountId === currentAccountId.value);
+        } else {
+            // Normal folder filtering
+            results = results.filter(
+                email =>
+                    email.folderId === currentFolderId.value &&
+                    email.accountId === currentAccountId.value,
+            );
+        }
+
+        // Apply search filter if there's a search query
+        if (searchQuery.value.trim()) {
+            const query = searchQuery.value.toLowerCase().trim();
+            results = results.filter(
+                email =>
+                    email.subject.toLowerCase().includes(query) ||
+                    email.bodyText?.toLowerCase().includes(query) ||
+                    email.from.name?.toLowerCase().includes(query) ||
+                    email.from.email.toLowerCase().includes(query) ||
+                    email.snippet.toLowerCase().includes(query) ||
+                    email.to.some(
+                        addr =>
+                            addr.name?.toLowerCase().includes(query) ||
+                            addr.email.toLowerCase().includes(query),
+                    ),
+            );
+        }
+
+        return results;
     });
 
     const unreadCount = computed(() => {
@@ -95,6 +131,82 @@ export function useEmails() {
     function setCurrentAccount(accountId: string) {
         currentAccountId.value = accountId;
         selectedEmailId.value = null; // Deselect email when changing accounts
+    }
+
+    function setSearchQuery(query: string) {
+        searchQuery.value = query;
+        isSearching.value = query.trim().length > 0;
+    }
+
+    function clearSearch() {
+        searchQuery.value = '';
+        isSearching.value = false;
+    }
+
+    // Label management
+    function setCurrentLabel(labelId: string | null) {
+        currentLabelId.value = labelId;
+        selectedEmailId.value = null; // Deselect email when changing labels
+    }
+
+    function addLabelToEmail(emailId: string, label: Label) {
+        const email = emails.value.find(e => e.id === emailId);
+        if (email) {
+            if (!email.labels) {
+                email.labels = [];
+            }
+            // Check if label already exists
+            if (!email.labels.some(l => l.id === label.id)) {
+                email.labels.push(label);
+            }
+        }
+    }
+
+    function removeLabelFromEmail(emailId: string, labelId: string) {
+        const email = emails.value.find(e => e.id === emailId);
+        if (email && email.labels) {
+            email.labels = email.labels.filter(l => l.id !== labelId);
+        }
+    }
+
+    function createLabel(labelData: Omit<Label, 'id'>) {
+        const newLabel: Label = {
+            id: `label-${Date.now()}`,
+            ...labelData,
+        };
+        labels.value.push(newLabel);
+        return newLabel;
+    }
+
+    function updateLabel(label: Label) {
+        const index = labels.value.findIndex(l => l.id === label.id);
+        if (index !== -1) {
+            labels.value[index] = label;
+            // Update the label in all emails that have it
+            emails.value.forEach(email => {
+                if (email.labels) {
+                    const labelIndex = email.labels.findIndex(l => l.id === label.id);
+                    if (labelIndex !== -1) {
+                        email.labels[labelIndex] = label;
+                    }
+                }
+            });
+        }
+    }
+
+    function deleteLabel(labelId: string) {
+        // Remove from labels array
+        labels.value = labels.value.filter(l => l.id !== labelId);
+        // Remove from all emails
+        emails.value.forEach(email => {
+            if (email.labels) {
+                email.labels = email.labels.filter(l => l.id !== labelId);
+            }
+        });
+        // Clear current label if it's the one being deleted
+        if (currentLabelId.value === labelId) {
+            currentLabelId.value = null;
+        }
     }
 
     function searchEmails(params: EmailSearchParams): Email[] {
@@ -182,8 +294,12 @@ export function useEmails() {
         currentFolder,
         currentFolderId,
         currentAccountId,
+        currentLabelId,
         filteredEmails,
         unreadCount,
+        searchQuery,
+        isSearching,
+        labels,
 
         // Actions
         selectEmail,
@@ -193,12 +309,21 @@ export function useEmails() {
         moveToFolder,
         setCurrentFolder,
         setCurrentAccount,
+        setSearchQuery,
+        clearSearch,
         searchEmails,
+
+        // Label actions
+        setCurrentLabel,
+        addLabelToEmail,
+        removeLabelFromEmail,
+        createLabel,
+        updateLabel,
+        deleteLabel,
 
         // Static data (for now)
         folders: dummyFolders,
         accounts: dummyAccounts,
-        labels: dummyLabels,
         threads: dummyThreads,
     };
 }

@@ -2,10 +2,12 @@
 import { Head } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import MailSidebar from '@/components/email/MailSidebar.vue';
 import EmailList from '@/components/email/EmailList.vue';
 import EmailViewer from '@/components/email/EmailViewer.vue';
 import ThreadView from '@/components/email/ThreadView.vue';
 import ComposeSheet from '@/components/email/ComposeSheet.vue';
+import LabelManager from '@/components/email/LabelManager.vue';
 import { useEmails } from '@/composables/useEmails';
 import { useCompose } from '@/composables/useCompose';
 import { Button } from '@/components/ui/button';
@@ -21,18 +23,27 @@ const {
     selectedThread,
     currentFolder,
     unreadCount,
+    searchQuery,
+    isSearching,
+    labels,
     selectEmail,
     toggleStar,
     deleteEmail,
     markAsRead,
+    setSearchQuery,
+    clearSearch,
+    createLabel,
+    updateLabel,
+    deleteLabel,
 } = useEmails();
 
 const { openCompose } = useCompose();
 
 // Local state
 const activeCategory = ref('primary');
-const searchQuery = ref('');
 const showEmailViewer = ref(false);
+const showSearchBar = ref(false);
+const showLabelManager = ref(false);
 
 // Computed
 const displayEmails = computed(() => {
@@ -79,15 +90,52 @@ const handleSelectAll = () => {
     // TODO: Implement select all
     console.log('Select all emails');
 };
+
+const toggleSearchBar = () => {
+    showSearchBar.value = !showSearchBar.value;
+    if (!showSearchBar.value) {
+        clearSearch();
+    }
+};
+
+const handleSearch = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    setSearchQuery(target.value);
+};
+
+const handleOpenLabelManager = () => {
+    showLabelManager.value = true;
+};
+
+const handleCloseLabelManager = () => {
+    showLabelManager.value = false;
+};
+
+const handleCreateLabel = (labelData: any) => {
+    createLabel(labelData);
+};
+
+const handleUpdateLabel = (label: any) => {
+    updateLabel(label);
+};
+
+const handleDeleteLabel = (labelId: string) => {
+    deleteLabel(labelId);
+};
 </script>
 
 <template>
     <Head title="Mail" />
 
     <AppLayout :show-breadcrumbs="false">
-        <div class="flex h-full flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <div class="flex items-center justify-between border-b border-sidebar-border px-6 py-3">
+        <div class="flex h-full overflow-hidden">
+            <!-- Sidebar -->
+            <MailSidebar @open-label-manager="handleOpenLabelManager" />
+
+            <!-- Main Content Area -->
+            <div class="flex flex-1 flex-col overflow-hidden">
+                <!-- Top Bar -->
+                <div class="flex items-center justify-between border-b border-sidebar-border px-6 py-3">
                 <!-- Left: Inbox Title and Actions -->
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2">
@@ -126,7 +174,7 @@ const handleSelectAll = () => {
                             </svg>
                         </Button>
 
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" @click="toggleSearchBar">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 class="h-4 w-4"
@@ -155,6 +203,58 @@ const handleSelectAll = () => {
                             </svg>
                         </Button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Search Bar (conditionally shown) -->
+            <div
+                v-if="showSearchBar || isSearching"
+                class="border-b border-sidebar-border px-6 py-3"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <Input
+                            :value="searchQuery"
+                            @input="handleSearch"
+                            placeholder="Search emails..."
+                            class="pl-10 pr-10"
+                            autofocus
+                        />
+                        <button
+                            v-if="searchQuery"
+                            @click="clearSearch"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
+                    <Button variant="ghost" size="sm" @click="toggleSearchBar">
+                        Close
+                    </Button>
+                </div>
+                <div v-if="isSearching" class="mt-2 text-sm text-muted-foreground">
+                    Found {{ displayEmails.length }} result{{ displayEmails.length !== 1 ? 's' : '' }}
                 </div>
             </div>
 
@@ -380,6 +480,7 @@ const handleSelectAll = () => {
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- Floating Compose Button (Mobile) -->
@@ -401,5 +502,15 @@ const handleSelectAll = () => {
 
         <!-- Compose Sheet -->
         <ComposeSheet />
+
+        <!-- Label Manager -->
+        <LabelManager
+            :open="showLabelManager"
+            :labels="labels"
+            @close="handleCloseLabelManager"
+            @create="handleCreateLabel"
+            @update="handleUpdateLabel"
+            @delete="handleDeleteLabel"
+        />
     </AppLayout>
 </template>

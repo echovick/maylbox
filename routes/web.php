@@ -18,4 +18,8 @@ Route::get('mail', function () {
     return Inertia::render('Mail');
 })->middleware(['auth', 'verified'])->name('mail');
 
+Route::get('account-setup', function () {
+    return Inertia::render('AccountSetup');
+})->middleware(['auth', 'verified'])->name('account-setup');
+
 require __DIR__.'/settings.php';
