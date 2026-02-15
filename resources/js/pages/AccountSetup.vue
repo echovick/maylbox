@@ -4,17 +4,37 @@ import { ref } from 'vue';
 import ConnectAccount from '@/components/email/ConnectAccount.vue';
 import { useEmails } from '@/composables/useEmails';
 
+const props = defineProps<{
+    userEmail: string;
+}>();
+
 const { accounts } = useEmails();
 
-const handleConnect = (accountData: any) => {
-    // In production, this would make an API call to save the account
-    console.log('Connecting account:', accountData);
+const handleConnect = async (accountData: any) => {
+    try {
+        const response = await fetch('/api/email-accounts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            },
+            body: JSON.stringify(accountData),
+        });
 
-    // Simulate successful connection
-    setTimeout(() => {
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to connect account');
+        }
+
+        const data = await response.json();
+        console.log('Account connected:', data);
+
         // Redirect to mail page after successful connection
         router.visit('/mail');
-    }, 500);
+    } catch (error) {
+        console.error('Error connecting account:', error);
+        // Error will be shown in ConnectAccount component
+    }
 };
 
 const handleClose = () => {
@@ -29,5 +49,5 @@ const handleClose = () => {
 <template>
     <Head title="Connect Your Account" />
 
-    <ConnectAccount @connect="handleConnect" @close="handleClose" />
+    <ConnectAccount :prefill-email="userEmail" @connect="handleConnect" @close="handleClose" />
 </template>

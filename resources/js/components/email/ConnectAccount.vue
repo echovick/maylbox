@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+
+const props = defineProps<{
+    prefillEmail?: string;
+}>();
 
 const emit = defineEmits<{
     close: [];
@@ -66,20 +70,33 @@ const detectImapSettings = () => {
     }
 };
 
+// Pre-fill email if provided
+onMounted(() => {
+    if (props.prefillEmail) {
+        imapForm.value.email = props.prefillEmail;
+        detectImapSettings();
+    }
+});
+
 // OAuth connection
 const connectOAuth = (providerId: string) => {
     isConnecting.value = true;
     error.value = null;
 
-    // Simulate OAuth flow
+    // TODO: Implement actual OAuth flow
+    // For now, simulate OAuth flow
     setTimeout(() => {
-        emit('connect', {
+        const accountData = {
             type: 'oauth',
             provider: providerId,
-            // In real app, this would come from OAuth callback
-            email: `user@${providerId}.com`,
+            email: props.prefillEmail || `user@${providerId}.com`,
             name: `My ${providerId.charAt(0).toUpperCase() + providerId.slice(1)} Account`,
-        });
+            // OAuth tokens would be returned from OAuth callback
+            access_token: 'oauth_access_token_here',
+            refresh_token: 'oauth_refresh_token_here',
+        };
+
+        emit('connect', accountData);
         isConnecting.value = false;
     }, 1500);
 };
@@ -101,15 +118,24 @@ const connectImap = () => {
 
     isConnecting.value = true;
 
-    // Simulate IMAP connection
-    setTimeout(() => {
-        emit('connect', {
-            type: 'imap',
-            ...imapForm.value,
-            name: imapForm.value.name || imapForm.value.email,
-        });
-        isConnecting.value = false;
-    }, 2000);
+    // Prepare account data
+    const accountData = {
+        type: 'imap',
+        email: imapForm.value.email,
+        name: imapForm.value.name || imapForm.value.email,
+        imap_host: imapForm.value.imapHost,
+        imap_port: imapForm.value.imapPort,
+        imap_encryption: 'ssl',
+        imap_password: imapForm.value.password,
+        smtp_host: imapForm.value.smtpHost,
+        smtp_port: imapForm.value.smtpPort,
+        smtp_encryption: 'tls',
+        smtp_password: imapForm.value.password,
+    };
+
+    // Emit to parent component which will handle the API call
+    emit('connect', accountData);
+    isConnecting.value = false;
 };
 </script>
 

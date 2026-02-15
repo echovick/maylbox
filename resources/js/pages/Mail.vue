@@ -44,6 +44,13 @@ const activeCategory = ref('primary');
 const showEmailViewer = ref(false);
 const showSearchBar = ref(false);
 const showLabelManager = ref(false);
+const isSyncing = ref(true);
+const syncProgress = ref('Loading your inbox...');
+
+// Simulate sync completion after 3 seconds
+setTimeout(() => {
+    isSyncing.value = false;
+}, 3000);
 
 // Computed
 const displayEmails = computed(() => {
@@ -134,6 +141,28 @@ const handleDeleteLabel = (labelId: string) => {
 
             <!-- Main Content Area -->
             <div class="flex flex-1 flex-col overflow-hidden">
+                <!-- Sync Status Banner (shown when syncing) -->
+                <div
+                    v-if="isSyncing"
+                    class="border-b border-sidebar-border bg-primary/10 px-6 py-3"
+                >
+                    <div class="flex items-center gap-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 animate-spin text-primary"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                        <span class="text-sm font-medium text-primary">
+                            {{ syncProgress }}
+                        </span>
+                    </div>
+                </div>
+
                 <!-- Top Bar -->
                 <div class="flex items-center justify-between border-b border-sidebar-border px-6 py-3">
                 <!-- Left: Inbox Title and Actions -->
