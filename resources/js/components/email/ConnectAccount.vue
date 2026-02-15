@@ -28,14 +28,18 @@ const oauthProviders = [
     {
         id: 'gmail',
         name: 'Gmail',
-        icon: 'M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z',
-        color: 'bg-red-500',
+        // Google logo SVG path
+        icon: 'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z',
+        color: 'bg-white',
+        textColor: 'text-gray-700',
     },
     {
         id: 'outlook',
         name: 'Outlook',
-        icon: 'M24 7.387v9.226c0 1.001-.772 1.772-1.772 1.772H12v-6.42l6.42-3.21zm0-3.193v.966l-6.42 3.209-5.193-2.578 4.516-2.258c1.16-.58 2.902-.29 3.676.58zM10.323 1.29L1.772 5.226A1.772 1.772 0 0 0 0 6.998v10.387c0 .966.772 1.772 1.772 1.772h8.551zm1.677 7.742v9.226h10.228c.58 0 1.159-.29 1.545-.773l-6.42-3.21z',
-        color: 'bg-blue-500',
+        // Microsoft logo SVG path
+        icon: 'M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z',
+        color: 'bg-white',
+        textColor: 'text-gray-700',
     },
 ];
 
@@ -153,9 +157,13 @@ const connectImap = () => {
         smtp_password: password.value,
     };
 
-    // Emit to parent component which will handle the API call
+    // Emit to parent component which will handle the redirect
     emit('connect', accountData);
-    isConnecting.value = false;
+
+    // Keep connecting state active until parent handles it
+    setTimeout(() => {
+        isConnecting.value = false;
+    }, 2000);
 };
 </script>
 
@@ -191,7 +199,7 @@ const connectImap = () => {
                     </div>
 
                     <div class="space-y-2">
-                        <Label for="password">Password</Label>
+                        <Label for="password">Email Account Password</Label>
                         <Input
                             id="password"
                             v-model="password"
@@ -199,8 +207,13 @@ const connectImap = () => {
                             placeholder="••••••••"
                             :disabled="isConnecting"
                         />
-                        <p v-if="!suggestOAuth && imapSettings.imapHost" class="text-xs text-muted-foreground">
-                            ✨ Settings auto-detected for {{ email }}
+                        <p class="text-xs text-muted-foreground">
+                            {{ suggestOAuth
+                                ? 'Enter your email password, or use OAuth below for easier setup'
+                                : imapSettings.imapHost
+                                    ? '✨ Settings auto-detected - just enter your email password'
+                                    : 'Enter the password for your email account'
+                            }}
                         </p>
                     </div>
 
@@ -232,28 +245,33 @@ const connectImap = () => {
                         :key="provider.id"
                         variant="outline"
                         size="lg"
-                        class="w-full justify-start h-auto py-3"
+                        class="w-full justify-start h-auto py-3 hover:bg-muted/50"
                         :disabled="isConnecting"
                         @click="connectOAuth(provider.id)"
                     >
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 w-full">
                             <div
                                 :class="[
                                     provider.color,
-                                    'flex h-10 w-10 shrink-0 items-center justify-center rounded',
+                                    'flex h-10 w-10 shrink-0 items-center justify-center rounded border',
                                 ]"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
-                                    fill="white"
-                                    class="h-6 w-6"
+                                    :fill="provider.id === 'gmail' ? 'currentColor' : 'currentColor'"
+                                    :class="[
+                                        'h-5 w-5',
+                                        provider.id === 'gmail' ? 'text-[#EA4335]' : 'text-[#0078D4]'
+                                    ]"
                                 >
                                     <path :d="provider.icon" />
                                 </svg>
                             </div>
-                            <div class="text-left">
-                                <div class="font-medium">Continue with {{ provider.name }}</div>
+                            <div class="flex-1 text-left">
+                                <div :class="['font-medium', provider.textColor]">
+                                    Continue with {{ provider.name }}
+                                </div>
                                 <div class="text-xs text-muted-foreground">
                                     Quick and secure OAuth setup
                                 </div>

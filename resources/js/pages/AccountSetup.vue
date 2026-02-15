@@ -10,31 +10,15 @@ const props = defineProps<{
 
 const { accounts } = useEmails();
 
-const handleConnect = async (accountData: any) => {
-    try {
-        const response = await fetch('/api/email-accounts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            },
-            body: JSON.stringify(accountData),
-        });
+const handleConnect = (accountData: any) => {
+    // For now, just log the connection data and redirect
+    // TODO: Connect to backend API when ready
+    console.log('Connecting account with data:', accountData);
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to connect account');
-        }
-
-        const data = await response.json();
-        console.log('Account connected:', data);
-
-        // Redirect to mail page after successful connection
+    // Simulate connection success and redirect to mail page
+    setTimeout(() => {
         router.visit('/mail');
-    } catch (error) {
-        console.error('Error connecting account:', error);
-        // Error will be shown in ConnectAccount component
-    }
+    }, 500);
 };
 
 const handleClose = () => {
