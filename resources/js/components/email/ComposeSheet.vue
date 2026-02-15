@@ -141,10 +141,10 @@ const triggerFileSelect = () => {
                 </SheetTitle>
             </SheetHeader>
 
-            <div class="flex h-[calc(100%-8rem)] flex-col gap-4 overflow-hidden pt-4">
+            <div class="flex h-[calc(100%-8rem)] flex-col overflow-hidden pt-6">
                 <!-- From -->
-                <div v-if="draft.from" class="flex items-center gap-2">
-                    <Label class="w-16 shrink-0 text-sm text-muted-foreground">
+                <div v-if="draft.from" class="flex items-center gap-4 border-b border-sidebar-border py-4">
+                    <Label class="w-20 shrink-0 text-sm text-muted-foreground">
                         From
                     </Label>
                     <div class="text-sm text-foreground">
@@ -153,17 +153,17 @@ const triggerFileSelect = () => {
                 </div>
 
                 <!-- To -->
-                <div class="flex items-start gap-2">
-                    <Label class="w-16 shrink-0 pt-2 text-sm text-muted-foreground">
+                <div class="flex items-start gap-4 border-b border-sidebar-border py-4">
+                    <Label class="w-20 shrink-0 pt-2 text-sm text-muted-foreground">
                         To
                     </Label>
                     <div class="flex-1">
-                        <div class="flex flex-wrap gap-1">
+                        <div class="flex flex-wrap gap-2">
                             <Badge
                                 v-for="recipient in draft.to"
                                 :key="recipient.email"
                                 variant="secondary"
-                                class="gap-1"
+                                class="gap-1 px-3 py-1"
                             >
                                 {{ recipient.name || recipient.email }}
                                 <button
@@ -187,18 +187,18 @@ const triggerFileSelect = () => {
                                 v-model="toInput"
                                 type="email"
                                 placeholder="Add recipients..."
-                                class="h-8 flex-1 border-none p-0 focus-visible:ring-0"
+                                class="h-9 flex-1 border-none pl-2 pr-0 focus-visible:ring-0"
                                 @keydown="handleToKeydown"
                                 @blur="handleAddRecipient('to', toInput)"
                             />
                         </div>
                     </div>
-                    <div class="flex gap-1">
+                    <div class="flex gap-2">
                         <Button
                             v-if="!showCc"
                             variant="ghost"
                             size="sm"
-                            class="h-8 text-xs"
+                            class="h-9 text-xs"
                             @click="showCc = true"
                         >
                             Cc
@@ -207,7 +207,7 @@ const triggerFileSelect = () => {
                             v-if="!showBcc"
                             variant="ghost"
                             size="sm"
-                            class="h-8 text-xs"
+                            class="h-9 text-xs"
                             @click="showBcc = true"
                         >
                             Bcc
@@ -216,17 +216,17 @@ const triggerFileSelect = () => {
                 </div>
 
                 <!-- Cc -->
-                <div v-if="showCc" class="flex items-start gap-2">
-                    <Label class="w-16 shrink-0 pt-2 text-sm text-muted-foreground">
+                <div v-if="showCc" class="flex items-start gap-4 border-b border-sidebar-border py-4">
+                    <Label class="w-20 shrink-0 pt-2 text-sm text-muted-foreground">
                         Cc
                     </Label>
                     <div class="flex-1">
-                        <div class="flex flex-wrap gap-1">
+                        <div class="flex flex-wrap gap-2">
                             <Badge
                                 v-for="recipient in draft.cc"
                                 :key="recipient.email"
                                 variant="secondary"
-                                class="gap-1"
+                                class="gap-1 px-3 py-1"
                             >
                                 {{ recipient.name || recipient.email }}
                                 <button
@@ -250,7 +250,7 @@ const triggerFileSelect = () => {
                                 v-model="ccInput"
                                 type="email"
                                 placeholder="Add Cc recipients..."
-                                class="h-8 flex-1 border-none p-0 focus-visible:ring-0"
+                                class="h-9 flex-1 border-none pl-2 pr-0 focus-visible:ring-0"
                                 @keydown="handleCcKeydown"
                                 @blur="handleAddRecipient('cc', ccInput)"
                             />
@@ -259,17 +259,17 @@ const triggerFileSelect = () => {
                 </div>
 
                 <!-- Bcc -->
-                <div v-if="showBcc" class="flex items-start gap-2">
-                    <Label class="w-16 shrink-0 pt-2 text-sm text-muted-foreground">
+                <div v-if="showBcc" class="flex items-start gap-4 border-b border-sidebar-border py-4">
+                    <Label class="w-20 shrink-0 pt-2 text-sm text-muted-foreground">
                         Bcc
                     </Label>
                     <div class="flex-1">
-                        <div class="flex flex-wrap gap-1">
+                        <div class="flex flex-wrap gap-2">
                             <Badge
                                 v-for="recipient in draft.bcc"
                                 :key="recipient.email"
                                 variant="secondary"
-                                class="gap-1"
+                                class="gap-1 px-3 py-1"
                             >
                                 {{ recipient.name || recipient.email }}
                                 <button
@@ -293,7 +293,7 @@ const triggerFileSelect = () => {
                                 v-model="bccInput"
                                 type="email"
                                 placeholder="Add Bcc recipients..."
-                                class="h-8 flex-1 border-none p-0 focus-visible:ring-0"
+                                class="h-9 flex-1 border-none pl-2 pr-0 focus-visible:ring-0"
                                 @keydown="handleBccKeydown"
                                 @blur="handleAddRecipient('bcc', bccInput)"
                             />
@@ -302,27 +302,24 @@ const triggerFileSelect = () => {
                 </div>
 
                 <!-- Subject -->
-                <div class="flex items-center gap-2">
-                    <Label class="w-16 shrink-0 text-sm text-muted-foreground">
+                <div class="flex items-center gap-4 border-b border-sidebar-border py-4">
+                    <Label class="w-20 shrink-0 text-sm text-muted-foreground">
                         Subject
                     </Label>
                     <Input
                         v-model="draft.subject"
                         type="text"
                         placeholder="Subject"
-                        class="border-none p-0 focus-visible:ring-0"
+                        class="h-10 border-none pl-2 pr-0 focus-visible:ring-0"
                     />
                 </div>
 
-                <!-- Divider -->
-                <div class="h-px bg-sidebar-border" />
-
                 <!-- Body -->
-                <div class="flex-1 overflow-y-auto">
+                <div class="flex-1 overflow-y-auto py-4">
                     <textarea
                         v-model="draft.bodyHtml"
                         placeholder="Compose your message..."
-                        class="h-full w-full resize-none border-none bg-transparent p-0 text-sm text-foreground outline-none focus:ring-0"
+                        class="h-full w-full resize-none border-none bg-transparent pl-2 pr-0 text-sm leading-relaxed text-foreground outline-none focus:ring-0"
                     />
                 </div>
 
