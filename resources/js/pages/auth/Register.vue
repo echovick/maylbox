@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Form, Head } from '@inertiajs/vue3';
+import { Eye, EyeOff } from 'lucide-vue-next';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -9,6 +11,9 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
 </script>
 
 <template>
@@ -20,7 +25,7 @@ import { store } from '@/routes/register';
 
         <Form
             v-bind="store.form()"
-            :reset-on-success="['password']"
+            :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
         >
@@ -42,23 +47,57 @@ import { store } from '@/routes/register';
 
                 <div class="grid gap-2">
                     <Label for="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        required
-                        :tabindex="2"
-                        autocomplete="new-password"
-                        name="password"
-                        placeholder="Create a password"
-                    />
+                    <div class="relative">
+                        <Input
+                            id="password"
+                            :type="showPassword ? 'text' : 'password'"
+                            required
+                            :tabindex="2"
+                            autocomplete="new-password"
+                            name="password"
+                            placeholder="Create a password"
+                        />
+                        <button
+                            type="button"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                            :tabindex="-1"
+                            @click="showPassword = !showPassword"
+                        >
+                            <component :is="showPassword ? EyeOff : Eye" class="h-4 w-4" />
+                        </button>
+                    </div>
                     <InputError :message="errors.password" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="password_confirmation">Confirm Password</Label>
+                    <div class="relative">
+                        <Input
+                            id="password_confirmation"
+                            :type="showPasswordConfirmation ? 'text' : 'password'"
+                            required
+                            :tabindex="3"
+                            autocomplete="new-password"
+                            name="password_confirmation"
+                            placeholder="Confirm your password"
+                        />
+                        <button
+                            type="button"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                            :tabindex="-1"
+                            @click="showPasswordConfirmation = !showPasswordConfirmation"
+                        >
+                            <component :is="showPasswordConfirmation ? EyeOff : Eye" class="h-4 w-4" />
+                        </button>
+                    </div>
+                    <InputError :message="errors.password_confirmation" />
                 </div>
 
                 <Button
                     type="submit"
                     class="mt-2 w-full"
                     size="lg"
-                    tabindex="3"
+                    tabindex="4"
                     :disabled="processing"
                     data-test="register-user-button"
                 >

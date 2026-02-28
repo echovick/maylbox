@@ -39,7 +39,7 @@ class EmailAccountController extends Controller
                 }),
             ],
             'type' => 'required|in:oauth,imap',
-            'provider' => 'nullable|string|in:gmail,outlook',
+            'provider' => 'nullable|string|in:gmail,outlook,yahoo,icloud,custom',
 
             // OAuth fields
             'access_token' => 'nullable|string',

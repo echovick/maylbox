@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
 import MailSidebar from '@/components/email/MailSidebar.vue';
 import EmailList from '@/components/email/EmailList.vue';
 import EmailViewer from '@/components/email/EmailViewer.vue';
@@ -134,8 +133,7 @@ const handleDeleteLabel = (labelId: string) => {
 <template>
     <Head title="Mail" />
 
-    <AppLayout :show-breadcrumbs="false">
-        <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden">
             <!-- Sidebar -->
             <MailSidebar @open-label-manager="handleOpenLabelManager" />
 
@@ -512,34 +510,33 @@ const handleDeleteLabel = (labelId: string) => {
             </div>
         </div>
 
-        <!-- Floating Compose Button (Mobile) -->
-        <Button
-            class="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg lg:hidden"
-            @click="handleCompose"
+    <!-- Floating Compose Button (Mobile) -->
+    <Button
+        class="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg lg:hidden"
+        @click="handleCompose"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M12 5v14M5 12h14" />
-            </svg>
-        </Button>
+            <path d="M12 5v14M5 12h14" />
+        </svg>
+    </Button>
 
-        <!-- Compose Sheet -->
-        <ComposeSheet />
+    <!-- Compose Sheet -->
+    <ComposeSheet />
 
-        <!-- Label Manager -->
-        <LabelManager
-            :open="showLabelManager"
-            :labels="labels"
-            @close="handleCloseLabelManager"
-            @create="handleCreateLabel"
-            @update="handleUpdateLabel"
-            @delete="handleDeleteLabel"
-        />
-    </AppLayout>
+    <!-- Label Manager -->
+    <LabelManager
+        :open="showLabelManager"
+        :labels="labels"
+        @close="handleCloseLabelManager"
+        @create="handleCreateLabel"
+        @update="handleUpdateLabel"
+        @delete="handleDeleteLabel"
+    />
 </template>

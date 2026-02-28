@@ -21,7 +21,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'], // Simplified - no confirmation required
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ])->validate();
 
         // Generate name from email if not provided (for simplified signup)

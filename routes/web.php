@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -16,9 +17,13 @@ Route::get('dashboard', function () {
 
 Route::get('mail', function () {
     return Inertia::render('Mail');
-})->middleware(['auth'])->name('mail'); // Removed 'verified' for faster onboarding
+})->middleware(['auth', 'has.email.account'])->name('mail');
 
 Route::get('account-setup', function () {
+    if (Schema::hasTable('email_accounts') && auth()->user()->emailAccounts()->count() > 0) {
+        return redirect()->route('mail');
+    }
+
     return Inertia::render('AccountSetup', [
         'userEmail' => auth()->user()->email ?? '',
     ]);
