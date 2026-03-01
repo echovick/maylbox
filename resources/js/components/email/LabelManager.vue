@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import type { Label } from '@/types/email';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label as LabelComponent } from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
@@ -13,7 +12,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 
-const props = defineProps<{
+defineProps<{
     open: boolean;
     labels: Label[];
 }>();

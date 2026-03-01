@@ -46,7 +46,6 @@ const {
     getInitials,
     getAvatarColor,
     formatRecipients,
-    getFileIcon,
 } = useEmailHelpers();
 
 const { openReply, openForward } = useCompose();

@@ -120,7 +120,7 @@ const handleForward = () => {
         <!-- Thread Messages -->
         <div class="flex-1 space-y-4 overflow-y-auto px-6 py-6">
             <div
-                v-for="(email, index) in thread.emails"
+                v-for="email in thread.emails"
                 :key="email.id"
                 class="rounded-lg border border-sidebar-border"
             >

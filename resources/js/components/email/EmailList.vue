@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import type { Email } from '@/types/email';
 import EmailListItem from './EmailListItem.vue';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const props = defineProps<{
+defineProps<{
     emails: Email[];
     selectedEmailId?: string | null;
     loading?: boolean;

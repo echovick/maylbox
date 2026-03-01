@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useCompose } from '@/composables/useCompose';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import {
     Sheet,
     SheetContent,
-    SheetDescription,
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
@@ -45,7 +44,7 @@ const handleAddRecipient = (type: 'to' | 'cc' | 'bcc', value: string) => {
     // Simple email validation
     if (!trimmed.includes('@')) return;
 
-    const [localPart, domain] = trimmed.split('@');
+    const [, domain] = trimmed.split('@');
     if (!domain) return;
 
     addRecipient(type, { email: trimmed });
@@ -91,7 +90,7 @@ const handleSaveDraft = () => {
     saveDraft();
 };
 
-const handleClose = () => {
+const _handleClose = () => {
     if (hasContent.value) {
         // TODO: Show confirmation dialog
         if (confirm('Save draft before closing?')) {
