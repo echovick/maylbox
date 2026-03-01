@@ -265,8 +265,8 @@ defineProps<{
         <!-- 4. Feature: Auto-Organize -->
         <section id="features" class="px-6 py-20 md:py-28">
             <div class="mx-auto max-w-5xl">
-                <div class="mb-4 flex items-center justify-center gap-2 text-2xl">
-                    <span>📂</span>
+                <div class="mb-4 flex items-center justify-center gap-2">
+                    <FolderOpen class="h-5 w-5 text-primary" />
                     <Sparkles class="h-5 w-5 text-amber-500" />
                 </div>
                 <h2 class="mb-4 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
