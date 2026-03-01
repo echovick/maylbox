@@ -1,13 +1,17 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "echovick/maylbox",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A modern, self-hostable email client for custom domain users.",
     "keywords": [
+        "email-client",
         "laravel",
-        "framework"
+        "vue",
+        "imap",
+        "self-hosted"
     ],
     "license": "MIT",
+    "homepage": "https://github.com/echovick/maylbox",
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
