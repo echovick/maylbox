@@ -169,7 +169,7 @@ export function useEmails() {
                 body: JSON.stringify(data),
             });
             if (!res.ok) return;
-            const raw = await res.json();
+            await res.json();
 
             // If the API returns the updated folder unread_count, update it
             if (data.is_read !== undefined) {
@@ -496,7 +496,7 @@ export function useEmails() {
                         }
                     }
                 }
-            } catch (e) {
+            } catch {
                 // Silently ignore poll errors
             }
         }, 2000);

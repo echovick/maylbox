@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, watch, ref } from 'vue';
-import type { Email } from '@/types/email';
-import { useEmailHelpers } from '@/composables/useEmailHelpers';
-import { useCompose } from '@/composables/useCompose';
 import HtmlEmailBody from '@/components/email/HtmlEmailBody.vue';
-import { useEmails } from '@/composables/useEmails';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useCompose } from '@/composables/useCompose';
+import { useEmailHelpers } from '@/composables/useEmailHelpers';
+import { useEmails } from '@/composables/useEmails';
+import type { Email } from '@/types/email';
 
 const props = defineProps<{
     email: Email;

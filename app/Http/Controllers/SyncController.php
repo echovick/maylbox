@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Jobs\SyncEmailAccountJob;
@@ -14,7 +13,7 @@ class SyncController extends Controller
 
         if ($emailAccount->sync_status === 'syncing') {
             return response()->json([
-                'message' => 'Sync already in progress',
+                'message'     => 'Sync already in progress',
                 'sync_status' => $emailAccount->sync_status,
             ]);
         }
@@ -24,7 +23,7 @@ class SyncController extends Controller
         $emailAccount->update(['sync_status' => 'pending']);
 
         return response()->json([
-            'message' => 'Sync started',
+            'message'     => 'Sync started',
             'sync_status' => 'pending',
         ]);
     }
@@ -34,9 +33,9 @@ class SyncController extends Controller
         abort_unless($emailAccount->user_id === Auth::id(), 403);
 
         return response()->json([
-            'sync_status' => $emailAccount->sync_status,
+            'sync_status'    => $emailAccount->sync_status,
             'last_synced_at' => $emailAccount->last_synced_at,
-            'sync_error' => $emailAccount->sync_error,
+            'sync_error'     => $emailAccount->sync_error,
         ]);
     }
 }

@@ -47,7 +47,7 @@ const {
     deleteLabel,
     updateCredentials,
     currentAccountId,
-    accounts} = useEmails();
+    accounts: emailAccounts} = useEmails();
 
 const { openCompose } = useCompose();
 
@@ -59,7 +59,7 @@ const showLabelManager = ref(false);
 const showCredentialsDialog = ref(false);
 
 const currentAccount = computed(() =>
-    accounts.value.find(acc => String(acc.id) === currentAccountId.value)
+    emailAccounts.value.find(acc => String(acc.id) === currentAccountId.value)
 );
 
 const isSyncing = computed(() => syncStatus.value === 'pending' || syncStatus.value === 'syncing');

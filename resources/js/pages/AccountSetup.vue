@@ -3,7 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ConnectAccount from '@/components/email/ConnectAccount.vue';
 
-const props = defineProps<{
+defineProps<{
     userEmail: string;
 }>();
 

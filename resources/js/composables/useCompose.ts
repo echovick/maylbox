@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
-import type { ComposeDraft, Email, EmailAddress } from '@/types/email';
 import { useEmails } from '@/composables/useEmails';
+import type { ComposeDraft, Email, EmailAddress } from '@/types/email';
 
 // Global state for composition
 const isComposing = ref(false);

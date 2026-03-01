@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
 import { ArrowLeft, Mail } from 'lucide-vue-next';
+import { ref, reactive } from 'vue';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{

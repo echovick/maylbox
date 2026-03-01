@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { EmailThread } from '@/types/email';
-import { useEmailHelpers } from '@/composables/useEmailHelpers';
-import { useCompose } from '@/composables/useCompose';
-import { Button } from '@/components/ui/button';
+import HtmlEmailBody from '@/components/email/HtmlEmailBody.vue';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import HtmlEmailBody from '@/components/email/HtmlEmailBody.vue';
+import { useCompose } from '@/composables/useCompose';
+import { useEmailHelpers } from '@/composables/useEmailHelpers';
+import type { EmailThread } from '@/types/email';
 
 const props = defineProps<{
     thread: EmailThread;

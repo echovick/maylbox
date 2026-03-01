@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import AppearanceToggle from '@/components/AppearanceToggle.vue';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
 import {
     Send,
     Mail,
@@ -26,6 +17,15 @@ import {
     FolderOpen,
     Sparkles,
 } from 'lucide-vue-next';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 defineProps<{
     canRegister: boolean;

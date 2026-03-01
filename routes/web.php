@@ -26,11 +26,11 @@ Route::get('mail', function () {
     $defaultAccount = $accounts->firstWhere('is_default', true) ?? $accounts->first();
 
     // Auto-dispatch sync for accounts that were never synced
-    $accounts->filter(fn ($account) => $account->sync_status === 'pending' && $account->last_synced_at === null)
-        ->each(fn ($account) => SyncEmailAccountJob::dispatch($account));
+    $accounts->filter(fn($account) => $account->sync_status === 'pending' && $account->last_synced_at === null)
+        ->each(fn($account) => SyncEmailAccountJob::dispatch($account));
 
     return Inertia::render('Mail', [
-        'accounts' => $accounts,
+        'accounts'         => $accounts,
         'defaultAccountId' => $defaultAccount?->id,
     ]);
 })->middleware(['auth', 'has.email.account'])->name('mail');
@@ -65,4 +65,4 @@ Route::middleware(['auth'])->prefix('api')->group(function () {
     Route::get('email-accounts/{emailAccount}/sync-status', [\App\Http\Controllers\SyncController::class, 'status']);
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

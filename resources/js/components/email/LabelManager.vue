@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Label } from '@/types/email';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogContent,
@@ -11,6 +9,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import type { Label } from '@/types/email';
 
 defineProps<{
     open: boolean;

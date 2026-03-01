@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Email } from '@/types/email';
 import EmailListItem from './EmailListItem.vue';
-import { Skeleton } from '@/components/ui/skeleton';
 
 defineProps<{
     emails: Email[];

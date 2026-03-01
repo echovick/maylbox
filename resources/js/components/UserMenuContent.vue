@@ -11,9 +11,9 @@ import {
 import UserInfo from '@/components/UserInfo.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import type { Appearance } from '@/composables/useAppearance';
-import type { User } from '@/types';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
+import type { User } from '@/types';
 
 type Props = {
     user: User;

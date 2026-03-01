@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
-import { useEmails } from '@/composables/useEmails';
-import { useCompose } from '@/composables/useCompose';
-import { useInitials } from '@/composables/useInitials';
+import { computed } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,6 +14,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { useCompose } from '@/composables/useCompose';
+import { useEmails } from '@/composables/useEmails';
+import { useInitials } from '@/composables/useInitials';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 

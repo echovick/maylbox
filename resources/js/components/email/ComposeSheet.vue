@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCompose } from '@/composables/useCompose';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,12 +10,11 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+import { useCompose } from '@/composables/useCompose';
 
 const {
     isComposing,
     draft,
-    hasContent,
     canSend,
     closeCompose,
     sendEmail,
@@ -88,16 +87,6 @@ const handleSend = async () => {
 
 const handleSaveDraft = () => {
     saveDraft();
-};
-
-const _handleClose = () => {
-    if (hasContent.value) {
-        // TODO: Show confirmation dialog
-        if (confirm('Save draft before closing?')) {
-            saveDraft();
-        }
-    }
-    closeCompose();
 };
 
 const handleFileSelect = (e: Event) => {

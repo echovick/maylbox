@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Email } from '@/types/email';
-import { useEmailHelpers } from '@/composables/useEmailHelpers';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { useEmailHelpers } from '@/composables/useEmailHelpers';
+import type { Email } from '@/types/email';
 
 const props = defineProps<{
     email: Email;
