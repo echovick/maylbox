@@ -210,7 +210,7 @@ export function useCompose() {
             if (currentFolderId.value) {
                 await fetchEmails(accountId, currentFolderId.value);
             }
-        } catch (e) {
+        } catch {
             toast.error('Network error. Please try again.');
         } finally {
             isSending.value = false;
