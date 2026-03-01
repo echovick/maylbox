@@ -54,10 +54,29 @@ class SyncEmailAccountJob implements ShouldQueue
 
             $this->account->update([
                 'sync_status' => 'failed',
-                'sync_error' => $e->getMessage(),
+                'sync_error' => $this->friendlyError($e),
             ]);
 
             throw $e;
         }
+    }
+
+    private function friendlyError(\Exception $e): string
+    {
+        $message = $e->getMessage();
+
+        if (stripos($message, 'AUTHENTICATIONFAILED') !== false || stripos($message, 'Authentication failed') !== false) {
+            return 'Authentication failed. Please check your email password and try again.';
+        }
+
+        if (stripos($message, 'Connection refused') !== false || stripos($message, 'Connection timed out') !== false) {
+            return 'Could not connect to the mail server. Please check your IMAP host and port settings.';
+        }
+
+        if (stripos($message, 'certificate') !== false || stripos($message, 'SSL') !== false) {
+            return 'SSL/TLS error connecting to the mail server. Please check your encryption settings.';
+        }
+
+        return 'Sync failed: ' . \Illuminate\Support\Str::limit($message, 120);
     }
 }

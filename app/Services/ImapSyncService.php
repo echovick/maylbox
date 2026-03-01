@@ -79,7 +79,7 @@ class ImapSyncService
 
         $maxStoredUid = Email::where('folder_id', $folder->id)->max('uid');
 
-        $query = $imapFolder->messages();
+        $query = $imapFolder->query()->all();
 
         if ($maxStoredUid) {
             // Incremental sync: fetch messages with UID > max stored

@@ -18,7 +18,7 @@ Route::get('dashboard', function () {
 
 Route::get('mail', function () {
     $accounts = auth()->user()->emailAccounts()
-        ->select(['id', 'name', 'email', 'type', 'provider', 'is_default', 'is_active', 'sync_status', 'last_synced_at'])
+        ->select(['id', 'name', 'email', 'type', 'provider', 'is_default', 'is_active', 'sync_status', 'last_synced_at', 'sync_error'])
         ->orderBy('is_default', 'desc')
         ->orderBy('created_at', 'asc')
         ->get();

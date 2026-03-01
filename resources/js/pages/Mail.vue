@@ -7,6 +7,7 @@ import EmailViewer from '@/components/email/EmailViewer.vue';
 import LabelManager from '@/components/email/LabelManager.vue';
 import MailSidebar from '@/components/email/MailSidebar.vue';
 import ThreadView from '@/components/email/ThreadView.vue';
+import UpdateCredentialsDialog from '@/components/email/UpdateCredentialsDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,7 +44,10 @@ const {
     goToPage,
     createLabel,
     updateLabel,
-    deleteLabel} = useEmails();
+    deleteLabel,
+    updateCredentials,
+    currentAccountId,
+    accounts} = useEmails();
 
 const { openCompose } = useCompose();
 
@@ -52,6 +56,11 @@ const activeCategory = ref('primary');
 const showEmailViewer = ref(false);
 const showSearchBar = ref(false);
 const showLabelManager = ref(false);
+const showCredentialsDialog = ref(false);
+
+const currentAccount = computed(() =>
+    accounts.value.find(acc => String(acc.id) === currentAccountId.value)
+);
 
 const isSyncing = computed(() => syncStatus.value === 'pending' || syncStatus.value === 'syncing');
 const hasSyncError = computed(() => syncStatus.value === 'failed');
@@ -143,6 +152,14 @@ const handleUpdateLabel = (label: any) => {
 const handleDeleteLabel = (labelId: string) => {
     deleteLabel(labelId);
 };
+
+const handleUpdateCredentials = async (data: Record<string, any>) => {
+    if (!currentAccountId.value) return;
+    const success = await updateCredentials(currentAccountId.value, data);
+    if (success) {
+        showCredentialsDialog.value = false;
+    }
+};
 </script>
 
 <template>
@@ -184,7 +201,7 @@ const handleDeleteLabel = (labelId: string) => {
                     <div class="flex items-center gap-3">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4 text-destructive"
+                            class="h-4 w-4 shrink-0 text-destructive"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -195,11 +212,16 @@ const handleDeleteLabel = (labelId: string) => {
                             <line x1="9" y1="9" x2="15" y2="15" />
                         </svg>
                         <span class="text-sm font-medium text-destructive">
-                            Sync failed: {{ syncError || 'Unknown error' }}
+                            {{ syncError || 'Sync failed. Please try again.' }}
                         </span>
-                        <Button variant="ghost" size="sm" class="ml-auto text-destructive" @click="handleRefresh">
-                            Retry
-                        </Button>
+                        <div class="ml-auto flex items-center gap-2">
+                            <Button variant="outline" size="sm" class="text-destructive" @click="showCredentialsDialog = true">
+                                Update Credentials
+                            </Button>
+                            <Button variant="ghost" size="sm" class="text-destructive" @click="handleRefresh">
+                                Retry
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -580,5 +602,15 @@ const handleDeleteLabel = (labelId: string) => {
         @create="handleCreateLabel"
         @update="handleUpdateLabel"
         @delete="handleDeleteLabel"
+    />
+
+    <!-- Update Credentials Dialog -->
+    <UpdateCredentialsDialog
+        :open="showCredentialsDialog"
+        :account-id="currentAccountId || ''"
+        :account-email="currentAccount?.email || ''"
+        :sync-error="syncError"
+        @close="showCredentialsDialog = false"
+        @submit="handleUpdateCredentials"
     />
 </template>

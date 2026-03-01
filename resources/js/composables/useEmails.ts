@@ -21,6 +21,7 @@ interface AccountProp {
     is_active: boolean;
     sync_status: string;
     last_synced_at: string | null;
+    sync_error: string | null;
 }
 
 // Global state
@@ -207,11 +208,16 @@ export function useEmails() {
             await fetchEmails(accountId, folders.value[0].id);
         }
 
-        // If sync_status indicates pending/syncing, start polling
+        // Set sync status from account props
         const account = accountProps.find(a => a.id === Number(accountId));
-        if (account && (account.sync_status === 'pending' || account.sync_status === 'syncing')) {
+        if (account) {
             syncStatus.value = account.sync_status;
-            pollSyncStatus();
+
+            if (account.sync_status === 'failed') {
+                syncError.value = account.sync_error || 'Sync failed. Please try again.';
+            } else if (account.sync_status === 'pending' || account.sync_status === 'syncing') {
+                pollSyncStatus();
+            }
         }
     }
 
@@ -408,6 +414,33 @@ export function useEmails() {
         return results;
     }
 
+    // --- Credentials ---
+    async function updateCredentials(accountId: string, data: Record<string, any>): Promise<boolean> {
+        try {
+            const res = await fetch(`/api/email-accounts/${accountId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-XSRF-TOKEN': decodeURIComponent(
+                        document.cookie.match(/XSRF-TOKEN=([^;]*)/)?.[1] || ''
+                    ),
+                },
+                body: JSON.stringify(data),
+            });
+            if (!res.ok) return false;
+            const result = await res.json();
+            syncStatus.value = result.account?.sync_status || 'pending';
+            syncError.value = null;
+            pollSyncStatus();
+            return true;
+        } catch (e) {
+            console.error('Failed to update credentials:', e);
+            return false;
+        }
+    }
+
     // --- Sync ---
     async function refreshEmails(): Promise<void> {
         if (!currentAccountId.value) return;
@@ -516,6 +549,7 @@ export function useEmails() {
         clearSearch,
         searchEmails,
         refreshEmails,
+        updateCredentials,
 
         // Label actions
         setCurrentLabel,

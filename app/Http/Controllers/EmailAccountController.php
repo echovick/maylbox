@@ -85,12 +85,24 @@ class EmailAccountController extends Controller
      */
     public function update(Request $request, EmailAccount $emailAccount)
     {
-        $this->authorize('update', $emailAccount);
+        abort_unless($emailAccount->user_id === Auth::id(), 403);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'is_default' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+
+            // Credential fields (for fixing auth issues)
+            'imap_host' => 'sometimes|string',
+            'imap_port' => 'sometimes|integer',
+            'imap_encryption' => 'sometimes|string|in:ssl,tls,none',
+            'imap_username' => 'sometimes|string',
+            'imap_password' => 'sometimes|string',
+            'smtp_host' => 'sometimes|string',
+            'smtp_port' => 'sometimes|integer',
+            'smtp_encryption' => 'sometimes|string|in:ssl,tls,none',
+            'smtp_username' => 'sometimes|string',
+            'smtp_password' => 'sometimes|string',
         ]);
 
         // If setting as default, unset other defaults
@@ -102,9 +114,16 @@ class EmailAccountController extends Controller
 
         $emailAccount->update($validated);
 
+        // If credentials were updated, re-trigger sync
+        $credentialFields = ['imap_host', 'imap_port', 'imap_encryption', 'imap_username', 'imap_password'];
+        if ($request->hasAny($credentialFields)) {
+            $emailAccount->update(['sync_status' => 'pending', 'sync_error' => null]);
+            SyncEmailAccountJob::dispatch($emailAccount);
+        }
+
         return response()->json([
             'message' => 'Email account updated successfully',
-            'account' => $emailAccount->only(['id', 'name', 'email', 'is_default', 'is_active']),
+            'account' => $emailAccount->only(['id', 'name', 'email', 'is_default', 'is_active', 'sync_status']),
         ]);
     }
 
@@ -113,7 +132,7 @@ class EmailAccountController extends Controller
      */
     public function destroy(EmailAccount $emailAccount)
     {
-        $this->authorize('delete', $emailAccount);
+        abort_unless($emailAccount->user_id === Auth::id(), 403);
 
         $emailAccount->delete();
 
