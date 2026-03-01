@@ -32,7 +32,7 @@ const handleClick = () => {
 <template>
     <div
         :class="[
-            'group relative flex cursor-pointer items-start gap-3 border-b border-sidebar-border/50 px-4 py-3 transition-colors hover:bg-sidebar-accent/50',
+            'group relative flex cursor-pointer items-start gap-2.5 border-b border-sidebar-border/50 px-3 py-2 transition-colors hover:bg-sidebar-accent/50',
             isSelected ? 'bg-sidebar-accent' : '',
             !email.isRead ? 'bg-background' : 'bg-muted/20',
         ]"
@@ -45,8 +45,8 @@ const handleClick = () => {
         />
 
         <!-- Avatar -->
-        <Avatar class="h-10 w-10 shrink-0">
-            <AvatarFallback :class="[avatarColor, 'text-white']">
+        <Avatar class="mt-0.5 h-8 w-8 shrink-0">
+            <AvatarFallback :class="[avatarColor, 'text-white text-xs']">
                 {{ initials }}
             </AvatarFallback>
         </Avatar>
@@ -54,7 +54,7 @@ const handleClick = () => {
         <!-- Email Content -->
         <div class="min-w-0 flex-1">
             <!-- Header: From and Time -->
-            <div class="mb-1 flex items-baseline justify-between gap-2">
+            <div class="flex items-baseline justify-between gap-2">
                 <span
                     :class="[
                         'truncate text-sm',
@@ -73,7 +73,7 @@ const handleClick = () => {
             <!-- Subject -->
             <div
                 :class="[
-                    'mb-1 truncate text-sm',
+                    'truncate text-sm',
                     !email.isRead
                         ? 'font-medium text-foreground'
                         : 'text-muted-foreground',
@@ -83,8 +83,8 @@ const handleClick = () => {
             </div>
 
             <!-- Snippet -->
-            <div class="mb-2 text-sm text-muted-foreground/80">
-                {{ truncate(email.snippet, 100) }}
+            <div class="truncate text-xs text-muted-foreground/80">
+                {{ truncate(email.snippet, 80) }}
             </div>
 
             <!-- Footer: Labels and Indicators -->

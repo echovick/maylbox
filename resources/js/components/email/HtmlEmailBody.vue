@@ -21,7 +21,7 @@ function writeContent() {
     doc.write(`<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; overflow-x: hidden; word-wrap: break-word; }
+  body { margin: 0; padding: 12px 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; overflow-x: hidden; word-wrap: break-word; }
   img { max-width: 100%; height: auto; }
   table { max-width: 100% !important; }
   pre { white-space: pre-wrap; }
@@ -48,8 +48,8 @@ watch(() => props.html, () => nextTick(writeContent), { immediate: true });
 <template>
     <iframe
         ref="iframeRef"
-        class="w-full border-0"
+        class="w-full border-0 rounded-md"
         sandbox="allow-same-origin"
-        style="min-height: 200px"
+        style="min-height: 100px"
     />
 </template>

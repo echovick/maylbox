@@ -65,8 +65,8 @@ const handleForward = () => {
 <template>
     <div class="flex h-full flex-col overflow-hidden bg-background">
         <!-- Header -->
-        <div class="border-b border-sidebar-border px-6 py-4">
-            <div class="mb-4 flex items-center justify-between">
+        <div class="border-b border-sidebar-border px-4 py-3">
+            <div class="mb-2 flex items-center justify-between">
                 <!-- Back button (mobile) -->
                 <Button
                     variant="ghost"
@@ -108,21 +108,21 @@ const handleForward = () => {
             </div>
 
             <!-- Subject and participant count -->
-            <h1 class="mb-2 text-2xl font-semibold text-foreground">
+            <h1 class="mb-1 text-lg font-semibold text-foreground">
                 {{ thread.subject }}
             </h1>
-            <p class="text-sm text-muted-foreground">
+            <p class="text-xs text-muted-foreground">
                 {{ thread.messageCount }} {{ thread.messageCount === 1 ? 'message' : 'messages' }}
                 • {{ formatRecipients(thread.participants) }}
             </p>
         </div>
 
         <!-- Thread Messages -->
-        <div class="flex-1 space-y-4 overflow-y-auto px-6 py-6">
+        <div class="flex-1 space-y-2 overflow-y-auto px-4 py-3">
             <div
                 v-for="email in thread.emails"
                 :key="email.id"
-                class="rounded-lg border border-sidebar-border"
+                class="rounded-md border border-sidebar-border"
             >
                 <Collapsible :open="isExpanded(email.id)">
                     <!-- Message Header (Always Visible) -->
@@ -131,13 +131,13 @@ const handleForward = () => {
                         @click="toggleMessage(email.id)"
                     >
                         <button
-                            class="flex w-full items-start gap-3 p-4 text-left transition-colors hover:bg-sidebar-accent/50"
+                            class="flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors hover:bg-sidebar-accent/50"
                         >
-                            <Avatar class="h-10 w-10 shrink-0">
+                            <Avatar class="h-7 w-7 shrink-0">
                                 <AvatarFallback
                                     :class="[
                                         getAvatarColor(email.from.email),
-                                        'text-white',
+                                        'text-white text-xs',
                                     ]"
                                 >
                                     {{ getInitials(email.from) }}
@@ -146,18 +146,18 @@ const handleForward = () => {
 
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-baseline justify-between gap-2">
-                                    <div class="flex items-baseline gap-2">
-                                        <span class="font-medium text-foreground">
+                                    <div class="flex items-baseline gap-2 overflow-hidden">
+                                        <span class="text-sm font-medium text-foreground">
                                             {{ email.from.name || email.from.email }}
                                         </span>
                                         <span
                                             v-if="!isExpanded(email.id)"
-                                            class="truncate text-sm text-muted-foreground"
+                                            class="truncate text-xs text-muted-foreground"
                                         >
                                             {{ email.snippet.substring(0, 60) }}...
                                         </span>
                                     </div>
-                                    <span class="shrink-0 text-xs text-muted-foreground">
+                                    <span class="shrink-0 text-[11px] text-muted-foreground">
                                         {{ formatEmailDate(email.date) }}
                                     </span>
                                 </div>
@@ -192,9 +192,9 @@ const handleForward = () => {
 
                     <!-- Message Body (Collapsible) -->
                     <CollapsibleContent>
-                        <div class="border-t border-sidebar-border px-4 pb-4 pt-4">
+                        <div class="border-t border-sidebar-border px-3 pb-3 pt-3">
                             <!-- Loading body -->
-                            <div v-if="!email.bodyHtml && !email.bodyText" class="flex items-center justify-center py-8">
+                            <div v-if="!email.bodyHtml && !email.bodyText" class="flex items-center justify-center py-4">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     class="h-5 w-5 animate-spin text-muted-foreground"
@@ -297,9 +297,9 @@ const handleForward = () => {
         </div>
 
         <!-- Action Footer -->
-        <div class="border-t border-sidebar-border px-6 py-4">
+        <div class="border-t border-sidebar-border px-4 py-3">
             <div class="flex gap-2">
-                <Button @click="handleReply">
+                <Button size="sm" @click="handleReply">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="mr-2 h-4 w-4"
@@ -314,10 +314,10 @@ const handleForward = () => {
                     </svg>
                     Reply
                 </Button>
-                <Button variant="outline" @click="handleReplyAll">
+                <Button variant="outline" size="sm" @click="handleReplyAll">
                     Reply All
                 </Button>
-                <Button variant="outline" @click="handleForward">
+                <Button variant="outline" size="sm" @click="handleForward">
                     Forward
                 </Button>
             </div>
