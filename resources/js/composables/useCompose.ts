@@ -58,9 +58,9 @@ export function useCompose() {
             }
         }
 
-        // Set subject
-        const subjectPrefix = email.subject.startsWith('RE:') ? '' : 'RE: ';
-        draft.value.subject = `${subjectPrefix}${email.subject}`;
+        // Set subject (strip existing Re:/RE:/re: prefix before adding)
+        const reStripped = email.subject.replace(/^re:\s*/i, '');
+        draft.value.subject = `RE: ${reStripped}`;
 
         // Set from
         const replyAccount = getCurrentAccount();
@@ -86,9 +86,9 @@ export function useCompose() {
         draft.value.mode = 'forward';
         draft.value.forwardEmail = email;
 
-        // Set subject
-        const subjectPrefix = email.subject.startsWith('FWD:') ? '' : 'FWD: ';
-        draft.value.subject = `${subjectPrefix}${email.subject}`;
+        // Set subject (strip existing Fwd:/FWD:/Fw: prefix before adding)
+        const fwdStripped = email.subject.replace(/^(fwd|fw):\s*/i, '');
+        draft.value.subject = `FWD: ${fwdStripped}`;
 
         // Set from
         const fwdAccount = getCurrentAccount();

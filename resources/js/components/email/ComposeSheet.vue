@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,6 +73,38 @@ const handleNameKeydown = (e: KeyboardEvent) => {
         saveFromName();
     }
 };
+
+// Body editor
+const bodyEditor = ref<HTMLDivElement | null>(null);
+
+const onBodyInput = () => {
+    if (bodyEditor.value) {
+        draft.value.bodyHtml = bodyEditor.value.innerHTML;
+    }
+};
+
+// Sync HTML content into the contenteditable div when draft changes externally
+watch(() => draft.value.bodyHtml, (newHtml) => {
+    if (bodyEditor.value && bodyEditor.value.innerHTML !== newHtml) {
+        bodyEditor.value.innerHTML = newHtml;
+    }
+});
+
+// Set initial content when composing opens
+watch(isComposing, async (open) => {
+    if (open) {
+        await nextTick();
+        if (bodyEditor.value) {
+            bodyEditor.value.innerHTML = draft.value.bodyHtml;
+            // Place cursor at the start (before quoted text)
+            const selection = window.getSelection();
+            if (selection) {
+                selection.selectAllChildren(bodyEditor.value);
+                selection.collapseToStart();
+            }
+        }
+    }
+});
 
 // File upload
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -371,10 +403,12 @@ const triggerFileSelect = () => {
 
                 <!-- Body -->
                 <div class="flex-1 overflow-y-auto py-4">
-                    <textarea
-                        v-model="draft.bodyHtml"
-                        placeholder="Compose your message..."
-                        class="h-full w-full resize-none border-none bg-transparent pl-2 pr-0 text-sm leading-relaxed text-foreground outline-none focus:ring-0"
+                    <div
+                        ref="bodyEditor"
+                        contenteditable="true"
+                        data-placeholder="Compose your message..."
+                        class="h-full w-full border-none bg-transparent pl-2 pr-0 text-sm leading-relaxed text-foreground outline-none focus:ring-0 empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
+                        @input="onBodyInput"
                     />
                 </div>
 

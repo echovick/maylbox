@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import type { Email, EmailSearchParams, Folder, Label } from '@/types/email';
+import type { Email, EmailAddress, EmailSearchParams, EmailThread, Folder, Label } from '@/types/email';
 
 // API response shape for paginated emails
 interface PaginatedResponse {
@@ -38,6 +38,10 @@ const isSearching = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
 const syncStatus = ref<string>('');
 const syncError = ref<string | null>(null);
+
+// Thread state
+const threadEmailsCache = ref<Email[]>([]);
+const isLoadingThread = ref(false);
 
 // Pagination state
 const currentPage = ref(1);
@@ -141,10 +145,16 @@ export function useEmails() {
             const raw = await res.json();
             const mapped = mapApiEmailToEmail(raw);
 
-            // Update in the local list
+            // Merge into existing object to preserve reactivity
             const idx = emails.value.findIndex(e => e.id === emailId);
             if (idx !== -1) {
-                emails.value[idx] = mapped;
+                Object.assign(emails.value[idx], mapped);
+            }
+
+            // Also merge into thread cache for cross-folder emails
+            const cacheIdx = threadEmailsCache.value.findIndex(e => e.id === emailId);
+            if (cacheIdx !== -1) {
+                Object.assign(threadEmailsCache.value[cacheIdx], mapped);
             }
 
             return mapped;
@@ -152,6 +162,64 @@ export function useEmails() {
             console.error('Failed to fetch email detail:', e);
             return null;
         }
+    }
+
+    async function fetchThreadEmails(accountId: string, messageIds: string[]): Promise<Email[]> {
+        try {
+            const params = new URLSearchParams({ account_id: accountId });
+            messageIds.forEach(id => params.append('message_ids[]', id));
+            const res = await fetch(`/api/emails/thread?${params}`, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!res.ok) return [];
+            const data = await res.json();
+            return (data as any[]).map(mapApiEmailToEmail);
+        } catch (e) {
+            console.error('Failed to fetch thread emails:', e);
+            return [];
+        }
+    }
+
+    function buildThreadChain(startEmail: Email, allEmails: Email[]): Email[] {
+        const byMessageId = new Map<string, Email>();
+        const byInReplyTo = new Map<string, Email[]>();
+
+        for (const e of allEmails) {
+            if (e.messageId) byMessageId.set(e.messageId, e);
+            if (e.inReplyTo) {
+                const list = byInReplyTo.get(e.inReplyTo) || [];
+                list.push(e);
+                byInReplyTo.set(e.inReplyTo, list);
+            }
+        }
+
+        const visited = new Set<string>();
+        const chain: Email[] = [];
+        const queue = [startEmail];
+
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+            if (visited.has(current.id)) continue;
+            visited.add(current.id);
+            chain.push(current);
+
+            // Follow inReplyTo upward
+            if (current.inReplyTo) {
+                const parent = byMessageId.get(current.inReplyTo);
+                if (parent && !visited.has(parent.id)) queue.push(parent);
+            }
+
+            // Follow replies downward
+            if (current.messageId) {
+                const replies = byInReplyTo.get(current.messageId) || [];
+                for (const reply of replies) {
+                    if (!visited.has(reply.id)) queue.push(reply);
+                }
+            }
+        }
+
+        chain.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        return chain;
     }
 
     async function patchEmail(emailId: string, data: Record<string, any>): Promise<void> {
@@ -264,16 +332,92 @@ export function useEmails() {
         return filteredEmails.value.filter(email => !email.isRead).length;
     });
 
-    // No thread support for now — computed always returns null
-    const selectedThread = computed(() => null);
+    const selectedThread = computed<EmailThread | null>(() => {
+        const email = selectedEmail.value;
+        if (!email) return null;
+
+        // Merge current folder emails + cross-folder cache, deduplicate by id
+        const allEmails = [...emails.value];
+        const seenIds = new Set(allEmails.map(e => e.id));
+        for (const e of threadEmailsCache.value) {
+            if (!seenIds.has(e.id)) {
+                allEmails.push(e);
+                seenIds.add(e.id);
+            }
+        }
+
+        const chain = buildThreadChain(email, allEmails);
+        if (chain.length < 2) return null;
+
+        // Strip RE:/FWD:/FW: prefixes for thread subject
+        const subject = chain[0].subject.replace(/^(re|fwd|fw):\s*/i, '').trim() || chain[0].subject;
+
+        // Collect unique participants
+        const participantMap = new Map<string, EmailAddress>();
+        for (const e of chain) {
+            participantMap.set(e.from.email, e.from);
+            for (const addr of e.to) {
+                participantMap.set(addr.email, addr);
+            }
+        }
+
+        return {
+            id: `thread-${chain[0].id}`,
+            subject,
+            participants: Array.from(participantMap.values()),
+            lastMessageAt: chain[chain.length - 1].date,
+            messageCount: chain.length,
+            emails: chain,
+            hasUnread: chain.some(e => !e.isRead),
+        };
+    });
 
     // --- Actions ---
-    function selectEmail(emailId: string) {
+    async function selectEmail(emailId: string) {
         selectedEmailId.value = emailId;
+
         // Mark as read after 2 seconds
         setTimeout(() => {
             markAsRead(emailId);
         }, 2000);
+
+        // Thread detection: check if this email is part of a thread
+        const email = emails.value.find(e => e.id === emailId);
+        if (!email) return;
+
+        // Collect known message IDs from local emails that form a chain
+        const localChain = buildThreadChain(email, emails.value);
+        const hasThread = email.inReplyTo || localChain.length > 1;
+
+        if (hasThread) {
+            isLoadingThread.value = true;
+            try {
+                // Gather all message IDs from the local chain to find cross-folder members
+                const messageIds = localChain
+                    .flatMap(e => [e.messageId, e.inReplyTo].filter(Boolean) as string[]);
+                const uniqueIds = [...new Set(messageIds)];
+
+                const crossFolderEmails = await fetchThreadEmails(currentAccountId.value, uniqueIds);
+                threadEmailsCache.value = crossFolderEmails;
+
+                // Fetch full body content for all thread emails missing body, in parallel
+                const allChainEmails = [...localChain];
+                const seenIds = new Set(allChainEmails.map(e => e.id));
+                for (const e of crossFolderEmails) {
+                    if (!seenIds.has(e.id)) {
+                        allChainEmails.push(e);
+                        seenIds.add(e.id);
+                    }
+                }
+
+                const needsBody = allChainEmails.filter(e => !e.bodyHtml && !e.bodyText);
+                await Promise.all(needsBody.map(e => fetchEmailDetail(e.id)));
+            } finally {
+                isLoadingThread.value = false;
+            }
+        } else {
+            threadEmailsCache.value = [];
+        }
     }
 
     function markAsRead(emailId: string, read = true) {
@@ -312,6 +456,7 @@ export function useEmails() {
         currentFolderId.value = folderId;
         currentLabelId.value = null;
         selectedEmailId.value = null;
+        threadEmailsCache.value = [];
         currentPage.value = 1;
         await fetchEmails(currentAccountId.value, folderId);
     }
@@ -319,6 +464,7 @@ export function useEmails() {
     async function setCurrentAccount(accountId: string) {
         currentAccountId.value = accountId;
         selectedEmailId.value = null;
+        threadEmailsCache.value = [];
         currentPage.value = 1;
 
         await fetchFolders(accountId);
@@ -523,6 +669,7 @@ export function useEmails() {
         searchQuery,
         isSearching,
         isLoading,
+        isLoadingThread,
         labels,
         syncStatus,
         syncError,

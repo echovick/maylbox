@@ -193,32 +193,47 @@ const handleForward = () => {
                     <!-- Message Body (Collapsible) -->
                     <CollapsibleContent>
                         <div class="border-t border-sidebar-border px-4 pb-4 pt-4">
-                            <!-- Labels -->
-                            <div
-                                v-if="email.labels && email.labels.length > 0"
-                                class="mb-3 flex gap-2"
-                            >
-                                <Badge
-                                    v-for="label in email.labels"
-                                    :key="label.id"
-                                    variant="outline"
-                                    class="text-xs"
-                                    :style="{ borderColor: label.color }"
+                            <!-- Loading body -->
+                            <div v-if="!email.bodyHtml && !email.bodyText" class="flex items-center justify-center py-8">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 animate-spin text-muted-foreground"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
                                 >
-                                    {{ label.name }}
-                                </Badge>
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                </svg>
                             </div>
 
-                            <!-- Email Body -->
-                            <HtmlEmailBody v-if="email.bodyHtml" :html="email.bodyHtml" />
-                            <div
-                                v-else
-                                class="whitespace-pre-wrap text-sm text-foreground"
-                            >
-                                {{ email.bodyText }}
-                            </div>
+                            <template v-else>
+                                <!-- Labels -->
+                                <div
+                                    v-if="email.labels && email.labels.length > 0"
+                                    class="mb-3 flex gap-2"
+                                >
+                                    <Badge
+                                        v-for="label in email.labels"
+                                        :key="label.id"
+                                        variant="outline"
+                                        class="text-xs"
+                                        :style="{ borderColor: label.color }"
+                                    >
+                                        {{ label.name }}
+                                    </Badge>
+                                </div>
 
-                            <!-- Attachments -->
+                                <!-- Email Body -->
+                                <HtmlEmailBody v-if="email.bodyHtml" :html="email.bodyHtml" />
+                                <div
+                                    v-else
+                                    class="whitespace-pre-wrap text-sm text-foreground"
+                                >
+                                    {{ email.bodyText }}
+                                </div>
+
+                                <!-- Attachments -->
                             <div
                                 v-if="email.attachments && email.attachments.length > 0"
                                 class="mt-4"
@@ -274,6 +289,7 @@ const handleForward = () => {
                                     </div>
                                 </div>
                             </div>
+                            </template>
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

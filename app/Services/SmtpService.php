@@ -48,16 +48,17 @@ class SmtpService
             $email->text(strip_tags($data['body_html']));
         }
 
+        // Generate a stable Message-ID before sending so we can reliably store it
+        $domain = substr($account->email, strpos($account->email, '@') + 1);
+        $messageId = bin2hex(random_bytes(16)) . '@' . $domain;
+        $email->getHeaders()->addIdHeader('Message-Id', $messageId);
+
         // In-Reply-To header
         if (!empty($data['in_reply_to'])) {
             $email->getHeaders()->addIdHeader('In-Reply-To', $data['in_reply_to']);
         }
 
         $mailer->send($email);
-
-        // Extract the Message-ID that Symfony generated
-        $messageId = $email->getHeaders()->get('Message-ID')?->getBodyAsString() ?? '';
-        $messageId = trim($messageId, '<>');
 
         return $messageId;
     }

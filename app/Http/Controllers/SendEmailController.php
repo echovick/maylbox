@@ -68,7 +68,13 @@ class SendEmailController extends Controller
             ]
         );
 
-        $bodyText = strip_tags($validated['body_html']);
+        $bodyHtml = $validated['body_html'];
+        $bodyText = strip_tags($bodyHtml);
+
+        // Strip quoted text for snippet (reply/forward quoted blocks)
+        $snippetHtml = preg_replace('/<div\s+style="border-left:\s*2px.*?<\/div>/is', '', $bodyHtml);
+        $snippetHtml = preg_replace('/<div\s+style="border:\s*1px.*?<\/div>/is', '', $snippetHtml);
+        $snippetText = trim(strip_tags($snippetHtml));
 
         $email = Email::create([
             'email_account_id' => $account->id,
@@ -83,8 +89,8 @@ class SendEmailController extends Controller
             'bcc' => $validated['bcc'] ?? null,
             'subject' => $validated['subject'],
             'body_text' => $bodyText,
-            'body_html' => $validated['body_html'],
-            'snippet' => Email::makeSnippet($bodyText),
+            'body_html' => $bodyHtml,
+            'snippet' => Email::makeSnippet($snippetText ?: $bodyText),
             'date' => now(),
             'size' => strlen($validated['body_html']),
             'is_read' => true,

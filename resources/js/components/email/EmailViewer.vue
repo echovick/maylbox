@@ -19,13 +19,18 @@ const props = defineProps<{
     email: Email;
 }>();
 
-const { fetchEmailDetail } = useEmails();
+const { fetchEmailDetail, emails } = useEmails();
 const loadingBody = ref(false);
 
+const currentEmail = computed(() => {
+    return emails.value.find(e => e.id === props.email.id) ?? props.email;
+});
+
 async function ensureBodyLoaded() {
-    if (!props.email.bodyHtml && !props.email.bodyText) {
+    const email = currentEmail.value;
+    if (!email.bodyHtml && !email.bodyText) {
         loadingBody.value = true;
-        await fetchEmailDetail(props.email.id);
+        await fetchEmailDetail(email.id);
         loadingBody.value = false;
     }
 }
@@ -50,27 +55,27 @@ const {
 
 const { openReply, openForward } = useCompose();
 
-const avatarColor = computed(() => getAvatarColor(props.email.from.email));
-const initials = computed(() => getInitials(props.email.from));
+const avatarColor = computed(() => getAvatarColor(currentEmail.value.from.email));
+const initials = computed(() => getInitials(currentEmail.value.from));
 
 const handleReply = () => {
-    openReply(props.email);
+    openReply(currentEmail.value);
 };
 
 const handleReplyAll = () => {
-    openReply(props.email, true);
+    openReply(currentEmail.value, true);
 };
 
 const handleForward = () => {
-    openForward(props.email);
+    openForward(currentEmail.value);
 };
 
 const handleDelete = () => {
-    emit('delete', props.email.id);
+    emit('delete', currentEmail.value.id);
 };
 
 const handleToggleStar = () => {
-    emit('toggleStar', props.email.id);
+    emit('toggleStar', currentEmail.value.id);
 };
 
 </script>
@@ -104,14 +109,14 @@ const handleToggleStar = () => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        :class="email.isStarred ? 'text-yellow-500' : ''"
+                        :class="currentEmail.isStarred ? 'text-yellow-500' : ''"
                         @click="handleToggleStar"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5"
                             viewBox="0 0 24 24"
-                            :fill="email.isStarred ? 'currentColor' : 'none'"
+                            :fill="currentEmail.isStarred ? 'currentColor' : 'none'"
                             stroke="currentColor"
                             stroke-width="2"
                         >
@@ -163,7 +168,7 @@ const handleToggleStar = () => {
 
             <!-- Subject -->
             <h1 class="mb-4 text-2xl font-semibold text-foreground">
-                {{ email.subject }}
+                {{ currentEmail.subject }}
             </h1>
 
             <!-- Sender Info -->
@@ -178,24 +183,24 @@ const handleToggleStar = () => {
                     <div class="flex items-baseline justify-between">
                         <div>
                             <div class="text-sm font-medium text-foreground">
-                                {{ email.from.name || email.from.email }}
+                                {{ currentEmail.from.name || currentEmail.from.email }}
                             </div>
                             <div class="text-xs text-muted-foreground">
-                                {{ email.from.email }}
+                                {{ currentEmail.from.email }}
                             </div>
                         </div>
                         <div class="text-xs text-muted-foreground">
-                            {{ formatEmailDate(email.date) }}
+                            {{ formatEmailDate(currentEmail.date) }}
                         </div>
                     </div>
 
                     <!-- Recipients -->
                     <div class="mt-2 text-xs text-muted-foreground">
                         <span class="mr-1">To:</span>
-                        {{ formatRecipients(email.to) }}
-                        <span v-if="email.cc && email.cc.length > 0" class="ml-2">
+                        {{ formatRecipients(currentEmail.to) }}
+                        <span v-if="currentEmail.cc && currentEmail.cc.length > 0" class="ml-2">
                             <span class="mr-1">Cc:</span>
-                            {{ formatRecipients(email.cc) }}
+                            {{ formatRecipients(currentEmail.cc) }}
                         </span>
                     </div>
                 </div>
@@ -203,11 +208,11 @@ const handleToggleStar = () => {
 
             <!-- Labels -->
             <div
-                v-if="email.labels && email.labels.length > 0"
+                v-if="currentEmail.labels && currentEmail.labels.length > 0"
                 class="mt-3 flex gap-2"
             >
                 <Badge
-                    v-for="label in email.labels"
+                    v-for="label in currentEmail.labels"
                     :key="label.id"
                     variant="outline"
                     class="text-xs"
@@ -234,22 +239,22 @@ const handleToggleStar = () => {
                 </svg>
             </div>
             <!-- Body Content -->
-            <HtmlEmailBody v-if="!loadingBody && email.bodyHtml" :html="email.bodyHtml" />
+            <HtmlEmailBody v-if="!loadingBody && currentEmail.bodyHtml" :html="currentEmail.bodyHtml" />
             <div v-else-if="!loadingBody" class="whitespace-pre-wrap text-sm text-foreground">
-                {{ email.bodyText }}
+                {{ currentEmail.bodyText }}
             </div>
 
             <!-- Attachments -->
             <div
-                v-if="email.attachments && email.attachments.length > 0"
+                v-if="currentEmail.attachments && currentEmail.attachments.length > 0"
                 class="mt-6"
             >
                 <h3 class="mb-3 text-sm font-medium text-foreground">
-                    Attachments ({{ email.attachments.length }})
+                    Attachments ({{ currentEmail.attachments.length }})
                 </h3>
                 <div class="grid gap-2 sm:grid-cols-2">
                     <div
-                        v-for="attachment in email.attachments"
+                        v-for="attachment in currentEmail.attachments"
                         :key="attachment.id"
                         class="flex items-center gap-3 rounded-lg border border-sidebar-border p-3 transition-colors hover:bg-sidebar-accent/50"
                     >
