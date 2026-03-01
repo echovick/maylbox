@@ -24,12 +24,38 @@ class EmailController extends Controller
         $emails = Email::where('email_account_id', $accountId)
             ->where('folder_id', $request->input('folder_id'))
             ->select([
-                'id', 'email_account_id', 'folder_id', 'uid', 'message_id',
+                'id', 'email_account_id', 'folder_id', 'uid', 'message_id', 'in_reply_to',
                 'from_email', 'from_name', 'to', 'subject', 'snippet', 'date',
                 'is_read', 'is_starred', 'is_draft', 'has_attachments', 'attachments_meta',
             ])
             ->orderByDesc('date')
             ->paginate(20);
+
+        return response()->json($emails);
+    }
+
+    public function thread(Request $request)
+    {
+        $request->validate([
+            'account_id' => 'required|integer',
+            'message_ids' => 'required|array|min:1',
+            'message_ids.*' => 'string',
+        ]);
+
+        $accountId = $request->input('account_id');
+        $hasAccount = Auth::user()->emailAccounts()->where('id', $accountId)->exists();
+        abort_unless($hasAccount, 403);
+
+        $messageIds = $request->input('message_ids');
+
+        $emails = Email::where('email_account_id', $accountId)
+            ->where(function ($query) use ($messageIds) {
+                $query->whereIn('message_id', $messageIds)
+                      ->orWhereIn('in_reply_to', $messageIds);
+            })
+            ->orderBy('date', 'asc')
+            ->limit(50)
+            ->get();
 
         return response()->json($emails);
     }

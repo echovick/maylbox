@@ -64,6 +64,7 @@ Route::middleware(['auth'])->prefix('api')->group(function () {
 
     // Emails
     Route::get('emails', [\App\Http\Controllers\EmailController::class, 'index']);
+    Route::get('emails/thread', [\App\Http\Controllers\EmailController::class, 'thread']);
     Route::get('emails/{email}', [\App\Http\Controllers\EmailController::class, 'show']);
     Route::patch('emails/{email}', [\App\Http\Controllers\EmailController::class, 'update']);
     Route::post('emails/send', \App\Http\Controllers\SendEmailController::class);
