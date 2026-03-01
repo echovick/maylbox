@@ -413,9 +413,9 @@ export const dummyThreads: EmailThread[] = [
 
 // Categories/Tabs
 export const categories = [
-    { id: 'primary', label: 'Primary', count: 67 },
-    { id: 'company', label: 'Company', count: 23 },
-    { id: 'promotions', label: 'Promotions', count: 120 },
-    { id: 'socials', label: 'Socials', count: 45 },
-    { id: 'updates', label: 'Updates', count: 89 },
+    { id: 'primary', label: 'Primary', count: 0 },
+    { id: 'company', label: 'Company', count: 0 },
+    { id: 'promotions', label: 'Promotions', count: 0 },
+    { id: 'socials', label: 'Socials', count: 0 },
+    { id: 'updates', label: 'Updates', count: 0 },
 ];

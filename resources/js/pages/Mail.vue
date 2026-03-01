@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import MailSidebar from '@/components/email/MailSidebar.vue';
+import { ref, computed, onMounted } from 'vue';
+import ComposeSheet from '@/components/email/ComposeSheet.vue';
 import EmailList from '@/components/email/EmailList.vue';
 import EmailViewer from '@/components/email/EmailViewer.vue';
-import ThreadView from '@/components/email/ThreadView.vue';
-import ComposeSheet from '@/components/email/ComposeSheet.vue';
 import LabelManager from '@/components/email/LabelManager.vue';
-import { useEmails } from '@/composables/useEmails';
-import { useCompose } from '@/composables/useCompose';
+import MailSidebar from '@/components/email/MailSidebar.vue';
+import ThreadView from '@/components/email/ThreadView.vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { useCompose } from '@/composables/useCompose';
+import { useEmails } from '@/composables/useEmails';
 import { categories } from '@/data/dummyEmails';
+
+const props = defineProps<{
+    accounts: any[];
+    defaultAccountId: number | null;
+}>();
 
 const {
     filteredEmails,
@@ -21,20 +25,25 @@ const {
     selectedEmailId,
     selectedThread,
     currentFolder,
-    unreadCount,
     searchQuery,
     isSearching,
     labels,
+    syncStatus,
+    syncError,
+    currentPage,
+    totalPages,
+    totalEmails,
+    initializeFromProps,
     selectEmail,
     toggleStar,
     deleteEmail,
-    markAsRead,
     setSearchQuery,
     clearSearch,
+    refreshEmails,
+    goToPage,
     createLabel,
     updateLabel,
-    deleteLabel,
-} = useEmails();
+    deleteLabel} = useEmails();
 
 const { openCompose } = useCompose();
 
@@ -43,13 +52,18 @@ const activeCategory = ref('primary');
 const showEmailViewer = ref(false);
 const showSearchBar = ref(false);
 const showLabelManager = ref(false);
-const isSyncing = ref(true);
-const syncProgress = ref('Loading your inbox...');
 
-// Simulate sync completion after 3 seconds
-setTimeout(() => {
-    isSyncing.value = false;
-}, 3000);
+const isSyncing = computed(() => syncStatus.value === 'pending' || syncStatus.value === 'syncing');
+const hasSyncError = computed(() => syncStatus.value === 'failed');
+const syncProgress = computed(() => {
+    if (syncStatus.value === 'syncing') return 'Syncing your inbox...';
+    if (syncStatus.value === 'pending') return 'Loading your inbox...';
+    return '';
+});
+
+onMounted(() => {
+    initializeFromProps(props.accounts, props.defaultAccountId);
+});
 
 // Computed
 const displayEmails = computed(() => {
@@ -59,9 +73,11 @@ const displayEmails = computed(() => {
 });
 
 const currentRange = computed(() => {
-    const total = currentFolder.value?.totalCount || 0;
-    const displayed = Math.min(20, displayEmails.value.length);
-    return `1-${displayed} out of ${total}`;
+    const total = totalEmails.value || currentFolder.value?.totalCount || 0;
+    const perPage = 20;
+    const start = total > 0 ? (currentPage.value - 1) * perPage + 1 : 0;
+    const end = Math.min(currentPage.value * perPage, total);
+    return `${start}-${end} out of ${total}`;
 });
 
 // Actions
@@ -88,8 +104,7 @@ const handleCompose = () => {
 };
 
 const handleRefresh = () => {
-    // TODO: Implement refresh
-    console.log('Refreshing emails...');
+    refreshEmails();
 };
 
 const handleSelectAll = () => {
@@ -161,6 +176,33 @@ const handleDeleteLabel = (labelId: string) => {
                     </div>
                 </div>
 
+                <!-- Sync Error Banner -->
+                <div
+                    v-if="hasSyncError"
+                    class="border-b border-sidebar-border bg-destructive/10 px-6 py-3"
+                >
+                    <div class="flex items-center gap-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 text-destructive"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="15" y1="9" x2="9" y2="15" />
+                            <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                        <span class="text-sm font-medium text-destructive">
+                            Sync failed: {{ syncError || 'Unknown error' }}
+                        </span>
+                        <Button variant="ghost" size="sm" class="ml-auto text-destructive" @click="handleRefresh">
+                            Retry
+                        </Button>
+                    </div>
+                </div>
+
                 <!-- Top Bar -->
                 <div class="flex items-center justify-between border-b border-sidebar-border px-6 py-3">
                 <!-- Left: Inbox Title and Actions -->
@@ -177,7 +219,7 @@ const handleDeleteLabel = (labelId: string) => {
                             <rect x="2" y="4" width="20" height="16" rx="2" />
                             <path d="m2 7 10 7 10-7" />
                         </svg>
-                        <h1 class="text-lg font-semibold text-foreground">Inbox</h1>
+                        <h1 class="text-lg font-semibold text-foreground">{{ currentFolder?.name || 'Inbox' }}</h1>
                     </div>
                 </div>
 
@@ -413,7 +455,7 @@ const handleDeleteLabel = (labelId: string) => {
 
                     <!-- Pagination -->
                     <div class="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" disabled>
+                        <Button variant="ghost" size="icon" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 class="h-4 w-4"
@@ -425,7 +467,7 @@ const handleDeleteLabel = (labelId: string) => {
                                 <path d="M15 18l-6-6 6-6" />
                             </svg>
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 class="h-4 w-4"

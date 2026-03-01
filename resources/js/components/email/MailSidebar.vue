@@ -1,17 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { LogOut, Settings } from 'lucide-vue-next';
 import { useEmails } from '@/composables/useEmails';
 import { useCompose } from '@/composables/useCompose';
+import { useInitials } from '@/composables/useInitials';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { logout } from '@/routes';
+import { edit } from '@/routes/profile';
+
+const page = usePage();
+const user = page.props.auth.user as { name: string; email: string; avatar?: string };
+const { getInitials } = useInitials();
+
+const handleLogout = () => {
+    router.flushAll();
+};
 
 const {
     folders,
@@ -29,12 +44,12 @@ const { openCompose } = useCompose();
 
 // Get current account
 const currentAccount = computed(() => {
-    return accounts.find(acc => acc.id === currentAccountId.value);
+    return accounts.value.find(acc => String(acc.id) === currentAccountId.value);
 });
 
 // Get folders for current account
 const accountFolders = computed(() => {
-    return folders.filter(f => f.accountId === currentAccountId.value);
+    return folders.value.filter(f => f.accountId === currentAccountId.value);
 });
 
 // Folder icon mapping
@@ -60,15 +75,9 @@ const handleLabelClick = (labelId: string) => {
     setCurrentLabel(labelId);
 };
 
-const handleAccountSwitch = (accountId: string) => {
-    setCurrentAccount(accountId);
-    // Switch to inbox of the new account
-    const inboxFolder = folders.find(
-        f => f.accountId === accountId && f.type === 'inbox',
-    );
-    if (inboxFolder) {
-        setCurrentFolder(inboxFolder.id);
-    }
+const handleAccountSwitch = (accountId: string | number) => {
+    const id = String(accountId);
+    setCurrentAccount(id);
 };
 
 const handleAddAccount = () => {
@@ -131,9 +140,6 @@ const handleAddAccount = () => {
                                     {{ account.email }}
                                 </div>
                             </div>
-                            <Badge v-if="account.unreadCount > 0" variant="secondary">
-                                {{ account.unreadCount }}
-                            </Badge>
                         </div>
                     </DropdownMenuItem>
                     <Separator class="my-1" />
@@ -256,18 +262,57 @@ const handleAddAccount = () => {
             </div>
         </div>
 
-        <!-- Storage Indicator -->
-        <div class="border-t border-sidebar-border p-4">
-            <div class="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Storage</span>
-                <span>2.4 GB of 15 GB used</span>
-            </div>
-            <div class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div
-                    class="h-full bg-primary"
-                    style="width: 16%"
-                />
-            </div>
+        <!-- User Menu -->
+        <div class="border-t border-sidebar-border p-3">
+            <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                    <button class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-sidebar-accent/50">
+                        <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+                            <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
+                            <AvatarFallback class="rounded-lg text-black dark:text-white">
+                                {{ getInitials(user.name) }}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span class="flex-1 truncate text-left font-medium">{{ user.name }}</span>
+                        <Settings class="h-4 w-4 text-muted-foreground" />
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" class="w-56">
+                    <DropdownMenuLabel class="p-0 font-normal">
+                        <div class="flex items-center gap-2 px-2 py-1.5 text-left text-sm">
+                            <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+                                <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
+                                <AvatarFallback class="rounded-lg text-black dark:text-white">
+                                    {{ getInitials(user.name) }}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div class="grid flex-1 text-left text-sm leading-tight">
+                                <span class="truncate font-medium">{{ user.name }}</span>
+                                <span class="truncate text-xs text-muted-foreground">{{ user.email }}</span>
+                            </div>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem :as-child="true">
+                        <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
+                            <Settings class="mr-2 h-4 w-4" />
+                            Settings
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem :as-child="true">
+                        <Link
+                            class="block w-full cursor-pointer"
+                            :href="logout()"
+                            @click="handleLogout"
+                            as="button"
+                        >
+                            <LogOut class="mr-2 h-4 w-4" />
+                            Log out
+                        </Link>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     </div>
 </template>

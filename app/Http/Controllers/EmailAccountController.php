@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncEmailAccountJob;
 use App\Models\EmailAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,8 +72,7 @@ class EmailAccountController extends Controller
             'smtp_username' => $validated['smtp_username'] ?? $validated['email'],
         ]);
 
-        // TODO: Queue email sync job
-        // SyncEmailAccountJob::dispatch($account);
+        SyncEmailAccountJob::dispatch($account);
 
         return response()->json([
             'message' => 'Email account connected successfully',

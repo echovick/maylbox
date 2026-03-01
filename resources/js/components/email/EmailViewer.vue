@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, watch, ref } from 'vue';
 import type { Email } from '@/types/email';
 import { useEmailHelpers } from '@/composables/useEmailHelpers';
 import { useCompose } from '@/composables/useCompose';
+import { useEmails } from '@/composables/useEmails';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +17,20 @@ import {
 const props = defineProps<{
     email: Email;
 }>();
+
+const { fetchEmailDetail } = useEmails();
+const loadingBody = ref(false);
+
+async function ensureBodyLoaded() {
+    if (!props.email.bodyHtml && !props.email.bodyText) {
+        loadingBody.value = true;
+        await fetchEmailDetail(props.email.id);
+        loadingBody.value = false;
+    }
+}
+
+onMounted(ensureBodyLoaded);
+watch(() => props.email.id, ensureBodyLoaded);
 
 const emit = defineEmits<{
     close: [];
@@ -204,9 +219,22 @@ const handleToggleStar = () => {
 
         <!-- Email Body -->
         <div class="flex-1 overflow-y-auto px-6 py-6">
+            <!-- Loading body -->
+            <div v-if="loadingBody" class="flex items-center justify-center py-8">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 animate-spin text-muted-foreground"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+            </div>
             <!-- Body Content -->
             <div
-                v-if="email.bodyHtml"
+                v-else-if="email.bodyHtml"
                 class="prose prose-sm max-w-none dark:prose-invert"
                 v-html="email.bodyHtml"
             />

@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import type { ComposeDraft, Email, EmailAddress } from '@/types/email';
-import { dummyAccounts } from '@/data/dummyEmails';
+import { useEmails } from '@/composables/useEmails';
 
 // Global state for composition
 const isComposing = ref(false);
@@ -15,14 +15,21 @@ const draft = ref<ComposeDraft>({
 });
 
 export function useCompose() {
+    const { accounts } = useEmails();
+
+    function getCurrentAccount() {
+        return accounts.value?.[0] || { email: '', name: '' };
+    }
+
     // Actions
     function openCompose() {
         isComposing.value = true;
         resetDraft();
         draft.value.mode = 'compose';
+        const account = getCurrentAccount();
         draft.value.from = {
-            email: dummyAccounts[0].email,
-            name: dummyAccounts[0].name,
+            email: account.email,
+            name: account.name,
         };
     }
 
@@ -37,7 +44,7 @@ export function useCompose() {
         draft.value.to = [email.from];
         if (replyAll && email.to.length > 0) {
             // Include all original recipients except current user
-            const currentUserEmail = dummyAccounts[0].email;
+            const currentUserEmail = getCurrentAccount().email;
             draft.value.to = [
                 ...draft.value.to,
                 ...email.to.filter(addr => addr.email !== currentUserEmail),
@@ -54,9 +61,10 @@ export function useCompose() {
         draft.value.subject = `${subjectPrefix}${email.subject}`;
 
         // Set from
+        const replyAccount = getCurrentAccount();
         draft.value.from = {
-            email: dummyAccounts[0].email,
-            name: dummyAccounts[0].name,
+            email: replyAccount.email,
+            name: replyAccount.name,
         };
 
         // Add quoted text
@@ -81,9 +89,10 @@ export function useCompose() {
         draft.value.subject = `${subjectPrefix}${email.subject}`;
 
         // Set from
+        const fwdAccount = getCurrentAccount();
         draft.value.from = {
-            email: dummyAccounts[0].email,
-            name: dummyAccounts[0].name,
+            email: fwdAccount.email,
+            name: fwdAccount.name,
         };
 
         // Include attachments
