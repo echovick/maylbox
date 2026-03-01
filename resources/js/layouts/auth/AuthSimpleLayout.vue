@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
 import { home } from '@/routes';
 
 defineProps<{
@@ -13,6 +13,7 @@ defineProps<{
     <div
         class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
     >
+        <AppearanceToggle class="fixed top-4 right-4" />
         <div class="w-full max-w-sm">
             <div class="flex flex-col gap-8">
                 <div class="flex flex-col items-center gap-4">
@@ -21,10 +22,12 @@ defineProps<{
                         class="flex flex-col items-center gap-2 font-medium"
                     >
                         <div
-                            class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
+                            class="mb-1 flex items-center justify-center"
                         >
-                            <AppLogoIcon
-                                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
+                            <img
+                                src="/assets/imgs/maylbox-logo-icon.png"
+                                alt="Maylbox"
+                                class="h-10 w-auto"
                             />
                         </div>
                         <span class="sr-only">{{ title }}</span>

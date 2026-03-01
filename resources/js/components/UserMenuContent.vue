@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { LogOut, Monitor, Moon, Settings, Sun } from 'lucide-vue-next';
+import { computed } from 'vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -8,6 +9,8 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import UserInfo from '@/components/UserInfo.vue';
+import { useAppearance } from '@/composables/useAppearance';
+import type { Appearance } from '@/composables/useAppearance';
 import type { User } from '@/types';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -15,6 +18,38 @@ import { edit } from '@/routes/profile';
 type Props = {
     user: User;
 };
+
+const { appearance, updateAppearance } = useAppearance();
+
+const modes: Appearance[] = ['light', 'dark', 'system'];
+
+const themeIcon = computed(() => {
+    switch (appearance.value) {
+        case 'light':
+            return Sun;
+        case 'dark':
+            return Moon;
+        default:
+            return Monitor;
+    }
+});
+
+const themeLabel = computed(() => {
+    switch (appearance.value) {
+        case 'light':
+            return 'Light';
+        case 'dark':
+            return 'Dark';
+        default:
+            return 'System';
+    }
+});
+
+function cycleTheme() {
+    const idx = modes.indexOf(appearance.value);
+    const next = modes[(idx + 1) % modes.length];
+    updateAppearance(next);
+}
 
 const handleLogout = () => {
     router.flushAll();
@@ -36,6 +71,10 @@ defineProps<Props>();
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem class="cursor-pointer" @click="cycleTheme">
+            <component :is="themeIcon" class="mr-2 h-4 w-4" />
+            {{ themeLabel }}
         </DropdownMenuItem>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
