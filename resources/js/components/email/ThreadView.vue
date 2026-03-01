@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import HtmlEmailBody from '@/components/email/HtmlEmailBody.vue';
 
 const props = defineProps<{
     thread: EmailThread;
@@ -209,11 +210,7 @@ const handleForward = () => {
                             </div>
 
                             <!-- Email Body -->
-                            <div
-                                v-if="email.bodyHtml"
-                                class="prose prose-sm max-w-none dark:prose-invert"
-                                v-html="email.bodyHtml"
-                            />
+                            <HtmlEmailBody v-if="email.bodyHtml" :html="email.bodyHtml" />
                             <div
                                 v-else
                                 class="whitespace-pre-wrap text-sm text-foreground"

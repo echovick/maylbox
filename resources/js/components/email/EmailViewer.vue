@@ -3,6 +3,7 @@ import { computed, onMounted, watch, ref } from 'vue';
 import type { Email } from '@/types/email';
 import { useEmailHelpers } from '@/composables/useEmailHelpers';
 import { useCompose } from '@/composables/useCompose';
+import HtmlEmailBody from '@/components/email/HtmlEmailBody.vue';
 import { useEmails } from '@/composables/useEmails';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -72,6 +73,7 @@ const handleDelete = () => {
 const handleToggleStar = () => {
     emit('toggleStar', props.email.id);
 };
+
 </script>
 
 <template>
@@ -233,12 +235,8 @@ const handleToggleStar = () => {
                 </svg>
             </div>
             <!-- Body Content -->
-            <div
-                v-else-if="email.bodyHtml"
-                class="prose prose-sm max-w-none dark:prose-invert"
-                v-html="email.bodyHtml"
-            />
-            <div v-else class="whitespace-pre-wrap text-sm text-foreground">
+            <HtmlEmailBody v-if="!loadingBody && email.bodyHtml" :html="email.bodyHtml" />
+            <div v-else-if="!loadingBody" class="whitespace-pre-wrap text-sm text-foreground">
                 {{ email.bodyText }}
             </div>
 
