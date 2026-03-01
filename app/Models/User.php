@@ -58,4 +58,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(EmailAccount::class);
     }
+
+    /**
+     * Get the social accounts for the user.
+     */
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
+     * Determine if the user has a password set.
+     */
+    public function hasPassword(): bool
+    {
+        return ! is_null($this->password);
+    }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
+import SocialLoginButtons from '@/components/SocialLoginButtons.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,6 +17,7 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    socialProviders?: string[];
 }>();
 </script>
 
@@ -96,6 +98,8 @@ defineProps<{
                     <Spinner v-if="processing" />
                     Log in
                 </Button>
+
+                <SocialLoginButtons :providers="socialProviders ?? []" />
             </div>
 
             <div

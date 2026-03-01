@@ -3,6 +3,7 @@ import { Form, Head } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
+import SocialLoginButtons from '@/components/SocialLoginButtons.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,10 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+
+defineProps<{
+    socialProviders?: string[];
+}>();
 
 const showPassword = ref(false);
 const showPasswordConfirmation = ref(false);
@@ -115,6 +120,8 @@ const showPasswordConfirmation = ref(false);
                         <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                 </Button>
+
+                <SocialLoginButtons :providers="socialProviders ?? []" />
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
