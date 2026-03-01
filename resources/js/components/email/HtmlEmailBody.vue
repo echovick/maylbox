@@ -6,14 +6,17 @@ const props = defineProps<{
 }>();
 
 const iframeRef = ref<HTMLIFrameElement | null>(null);
+let writing = false;
 
 function writeContent() {
+    if (writing) return;
     const iframe = iframeRef.value;
     if (!iframe || !props.html) return;
 
     const doc = iframe.contentDocument;
     if (!doc) return;
 
+    writing = true;
     doc.open();
     doc.write(`<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -25,6 +28,7 @@ function writeContent() {
 </style>
 </head><body>${props.html}</body></html>`);
     doc.close();
+    writing = false;
 
     const resize = () => {
         if (doc.body) {
@@ -38,7 +42,7 @@ function writeContent() {
     setTimeout(resize, 500);
 }
 
-watch(() => props.html, () => nextTick(writeContent));
+watch(() => props.html, () => nextTick(writeContent), { immediate: true });
 </script>
 
 <template>
@@ -47,6 +51,5 @@ watch(() => props.html, () => nextTick(writeContent));
         class="w-full border-0"
         sandbox="allow-same-origin"
         style="min-height: 200px"
-        @load="writeContent"
     />
 </template>

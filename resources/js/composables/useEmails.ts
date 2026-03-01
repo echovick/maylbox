@@ -141,10 +141,10 @@ export function useEmails() {
             const raw = await res.json();
             const mapped = mapApiEmailToEmail(raw);
 
-            // Update in the local list
+            // Merge into existing object to preserve reactivity
             const idx = emails.value.findIndex(e => e.id === emailId);
             if (idx !== -1) {
-                emails.value[idx] = mapped;
+                Object.assign(emails.value[idx], mapped);
             }
 
             return mapped;
