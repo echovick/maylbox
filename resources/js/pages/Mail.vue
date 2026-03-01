@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
+import { Toaster } from 'vue-sonner';
 import ComposeSheet from '@/components/email/ComposeSheet.vue';
 import EmailList from '@/components/email/EmailList.vue';
 import EmailViewer from '@/components/email/EmailViewer.vue';
@@ -593,6 +594,9 @@ const handleUpdateCredentials = async (data: Record<string, any>) => {
 
     <!-- Compose Sheet -->
     <ComposeSheet />
+
+    <!-- Toast Notifications -->
+    <Toaster position="bottom-right" :duration="4000" rich-colors />
 
     <!-- Label Manager -->
     <LabelManager

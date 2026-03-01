@@ -14,6 +14,7 @@ import { useCompose } from '@/composables/useCompose';
 
 const {
     isComposing,
+    isSending,
     draft,
     canSend,
     closeCompose,
@@ -31,7 +32,6 @@ const ccInput = ref('');
 const bccInput = ref('');
 const showCc = ref(false);
 const showBcc = ref(false);
-const isSending = ref(false);
 
 // File upload
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -76,13 +76,8 @@ const handleBccKeydown = (e: KeyboardEvent) => {
 };
 
 const handleSend = async () => {
-    if (!canSend.value) return;
-
-    isSending.value = true;
-    // Simulate sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    sendEmail();
-    isSending.value = false;
+    if (!canSend.value || isSending.value) return;
+    await sendEmail();
 };
 
 const handleSaveDraft = () => {

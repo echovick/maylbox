@@ -1,9 +1,11 @@
 import { ref, computed } from 'vue';
+import { toast } from 'vue-sonner';
 import { useEmails } from '@/composables/useEmails';
 import type { ComposeDraft, Email, EmailAddress } from '@/types/email';
 
 // Global state for composition
 const isComposing = ref(false);
+const isSending = ref(false);
 const draft = ref<ComposeDraft>({
     to: [],
     cc: [],
@@ -156,17 +158,62 @@ export function useCompose() {
         console.log('Saving draft:', draft.value);
     }
 
-    function sendEmail() {
-        // TODO: Implement email sending
-        console.log('Sending email:', draft.value);
+    async function sendEmail() {
+        if (isSending.value) return;
 
-        // Simulate success
-        setTimeout(() => {
+        const { currentAccountId, fetchFolders, fetchEmails, currentFolderId } = useEmails();
+
+        const accountId = currentAccountId.value;
+        if (!accountId) {
+            toast.error('No email account selected.');
+            return;
+        }
+
+        isSending.value = true;
+
+        try {
+            const res = await fetch('/api/emails/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-XSRF-TOKEN': decodeURIComponent(
+                        document.cookie.match(/XSRF-TOKEN=([^;]*)/)?.[1] || '',
+                    ),
+                },
+                body: JSON.stringify({
+                    account_id: Number(accountId),
+                    to: draft.value.to,
+                    cc: draft.value.cc?.length ? draft.value.cc : undefined,
+                    bcc: draft.value.bcc?.length ? draft.value.bcc : undefined,
+                    subject: draft.value.subject,
+                    body_html: draft.value.bodyHtml,
+                    in_reply_to: draft.value.inReplyTo || undefined,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                toast.error(data.message || 'Failed to send email.');
+                return;
+            }
+
+            toast.success('Email sent successfully.');
             isComposing.value = false;
             resetDraft();
-            // Show success toast
-            console.log('Email sent successfully!');
-        }, 1000);
+
+            // Refresh folders to update sent count
+            await fetchFolders(accountId);
+            if (currentFolderId.value) {
+                await fetchEmails(accountId, currentFolderId.value);
+            }
+        } catch (e) {
+            toast.error('Network error. Please try again.');
+        } finally {
+            isSending.value = false;
+        }
     }
 
     function addAttachment(file: File) {
@@ -210,6 +257,7 @@ export function useCompose() {
     return {
         // State
         isComposing,
+        isSending,
         draft,
         hasContent,
         canSend,
