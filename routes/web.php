@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Jobs\SyncEmailAccountJob;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -44,6 +45,12 @@ Route::get('account-setup', function () {
         'userEmail' => auth()->user()->email ?? '',
     ]);
 })->middleware(['auth'])->name('account-setup');
+
+// Social auth routes
+Route::middleware('guest')->where(['provider' => 'google|github'])->group(function () {
+    Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+});
 
 // Email Account API routes
 Route::middleware(['auth'])->prefix('api')->group(function () {

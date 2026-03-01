@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import SocialLoginButtons from '@/components/SocialLoginButtons.vue';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
@@ -16,6 +17,7 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    socialProviders?: string[];
 }>();
 </script>
 
@@ -96,6 +98,8 @@ defineProps<{
                     <Spinner v-if="processing" />
                     Log in
                 </Button>
+
+                <SocialLoginButtons :providers="socialProviders ?? []" />
             </div>
 
             <div

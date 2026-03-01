@@ -51,6 +51,7 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
+            'socialProviders' => $this->getEnabledSocialProviders(),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/ResetPassword', [
@@ -66,11 +67,31 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/Register'));
+        Fortify::registerView(fn () => Inertia::render('auth/Register', [
+            'socialProviders' => $this->getEnabledSocialProviders(),
+        ]));
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/ConfirmPassword'));
+    }
+
+    /**
+     * Get the list of enabled social OAuth providers.
+     *
+     * @return string[]
+     */
+    private function getEnabledSocialProviders(): array
+    {
+        $providers = [];
+
+        foreach (['google', 'github'] as $provider) {
+            if (! empty(config("services.{$provider}.client_id"))) {
+                $providers[] = $provider;
+            }
+        }
+
+        return $providers;
     }
 
     /**
