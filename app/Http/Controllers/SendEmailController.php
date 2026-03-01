@@ -17,6 +17,7 @@ class SendEmailController extends Controller
     {
         $validated = $request->validate([
             'account_id' => ['required', 'integer', 'exists:email_accounts,id'],
+            'from_name' => ['nullable', 'string', 'max:255'],
             'to' => ['required', 'array', 'min:1'],
             'to.*.email' => ['required', 'email'],
             'to.*.name' => ['nullable', 'string'],
@@ -72,11 +73,11 @@ class SendEmailController extends Controller
         $email = Email::create([
             'email_account_id' => $account->id,
             'folder_id' => $sentFolder->id,
-            'uid' => 0,
+            'uid' => Email::where('folder_id', $sentFolder->id)->max('uid') + 1,
             'message_id' => $messageId,
             'in_reply_to' => $validated['in_reply_to'] ?? null,
             'from_email' => $account->email,
-            'from_name' => $account->name,
+            'from_name' => $validated['from_name'] ?? $account->name,
             'to' => $validated['to'],
             'cc' => $validated['cc'] ?? null,
             'bcc' => $validated['bcc'] ?? null,

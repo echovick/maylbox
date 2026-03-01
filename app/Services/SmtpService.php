@@ -21,8 +21,10 @@ class SmtpService
         $transport = Transport::fromDsn($dsn);
         $mailer = new Mailer($transport);
 
+        $fromName = $data['from_name'] ?? $account->name ?? '';
+
         $email = (new Email())
-            ->from(new Address($account->email, $account->name ?? ''))
+            ->from(new Address($account->email, $fromName))
             ->subject($data['subject'] ?? '(No Subject)');
 
         // To recipients

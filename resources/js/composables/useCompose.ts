@@ -184,6 +184,7 @@ export function useCompose() {
                 },
                 body: JSON.stringify({
                     account_id: Number(accountId),
+                    from_name: draft.value.from?.name || undefined,
                     to: draft.value.to,
                     cc: draft.value.cc?.length ? draft.value.cc : undefined,
                     bcc: draft.value.bcc?.length ? draft.value.bcc : undefined,
