@@ -152,7 +152,7 @@ class ImapSyncService
         $messageId = $message->getMessageId()?->toString();
         $inReplyTo = $message->getInReplyTo()?->toString();
         $subject = $message->getSubject()?->toString() ?: '(No Subject)';
-        $date = $message->getDate()?->toDate();
+        $date = $message->getDate()?->toDate()?->utc();
         $size = $message->getSize() ?? 0;
 
         return Email::updateOrCreate(
