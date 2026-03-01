@@ -180,5 +180,5 @@ test('authenticated users cannot access social auth routes', function () {
 
     $response = $this->actingAs($user)->get('/auth/google/redirect');
 
-    $response->assertRedirect('/mail');
+    $response->assertRedirect(route('dashboard'));
 });

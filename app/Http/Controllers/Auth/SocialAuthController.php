@@ -82,8 +82,9 @@ class SocialAuthController extends Controller
             'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? explode('@', $socialUser->getEmail())[0],
             'email' => $socialUser->getEmail(),
             'password' => null,
-            'email_verified_at' => now(),
         ]);
+
+        $user->forceFill(['email_verified_at' => now()])->save();
 
         $user->socialAccounts()->create([
             'provider' => $provider,
