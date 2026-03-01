@@ -9,6 +9,7 @@ import LabelManager from '@/components/email/LabelManager.vue';
 import MailSidebar from '@/components/email/MailSidebar.vue';
 import ThreadView from '@/components/email/ThreadView.vue';
 import UpdateCredentialsDialog from '@/components/email/UpdateCredentialsDialog.vue';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -461,7 +462,8 @@ const handleUpdateCredentials = async (data: Record<string, any>) => {
                     </svg>
                 </Button>
 
-                <div class="ml-auto flex items-center gap-2">
+                <div class="ml-auto flex items-center gap-1">
+                    <AppearanceToggle />
                     <span class="text-xs text-muted-foreground">Filter</span>
                     <Button variant="ghost" size="icon">
                         <svg
