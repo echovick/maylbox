@@ -1,7 +1,30 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+    Send,
+    Mail,
+    ArrowRight,
+    Inbox,
+    Tag,
+    Search,
+    Shield,
+    Lock,
+    Globe,
+    Zap,
+    PenLine,
+    Monitor,
+    Smartphone,
+    FolderOpen,
+    Sparkles,
+} from 'lucide-vue-next';
 
 defineProps<{
     canRegister: boolean;
@@ -9,170 +32,167 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Maylbox - Email That Just Works" />
+    <Head title="Maylbox - The Inbox That Works for You" />
 
-    <div class="min-h-screen bg-background">
-        <!-- Navigation -->
-        <nav class="border-b border-sidebar-border">
-            <div class="mx-auto max-w-7xl px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-8 w-8 text-primary"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                            <path d="m2 7 10 7 10-7" />
-                        </svg>
-                        <span class="text-xl font-bold text-foreground">Maylbox</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <Link href="/login">
-                            <Button variant="ghost">Sign In</Button>
-                        </Link>
-                        <Link v-if="canRegister" href="/register">
-                            <Button>Get Started</Button>
-                        </Link>
-                    </div>
+    <div class="min-h-screen bg-white">
+        <!-- 1. Navbar -->
+        <nav class="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
+            <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-2">
+                    <img src="/assets/imgs/maylbox-logo-icon.png" alt="Maylbox" class="h-7 w-auto" />
+                    <span class="text-lg font-semibold text-gray-900">Maylbox</span>
+                </div>
+                <div class="hidden items-center gap-8 md:flex">
+                    <a href="#features" class="text-sm text-gray-600 transition hover:text-gray-900">Features</a>
+                    <a href="#security" class="text-sm text-gray-600 transition hover:text-gray-900">Security</a>
+                    <a href="#faq" class="text-sm text-gray-600 transition hover:text-gray-900">FAQ</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <Link href="/login" class="text-sm text-gray-600 transition hover:text-gray-900">
+                        Log in
+                    </Link>
+                    <Link v-if="canRegister" href="/register">
+                        <Button size="sm">Get Maylbox Free</Button>
+                    </Link>
                 </div>
             </div>
         </nav>
 
-        <!-- Hero Section -->
-        <section class="mx-auto max-w-7xl px-6 py-20 md:py-32">
-            <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
-                <div class="flex flex-col justify-center">
-                    <Badge class="mb-6 w-fit" variant="secondary">
-                        Custom Domain Email Client
-                    </Badge>
-                    <h1 class="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-                        Webmail, but better
-                    </h1>
-                    <p class="mb-8 text-xl text-muted-foreground md:text-2xl">
-                        Connect your custom domain email. Modern interface. No hosting required.
-                        Sign up → connect inbox → send email in under 60 seconds.
-                    </p>
-                    <div class="flex flex-col gap-4 sm:flex-row">
-                        <Link v-if="canRegister" href="/register">
-                            <Button size="lg" class="w-full sm:w-auto">
-                                Get Started Free
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="ml-2 h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                >
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </Button>
-                        </Link>
-                        <Button size="lg" variant="outline" class="w-full sm:w-auto">
-                            View Demo
-                        </Button>
-                    </div>
-                    <div class="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
-                        <div class="flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <path d="M22 4 12 14.01l-3-3" />
-                            </svg>
-                            No credit card
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <path d="M22 4 12 14.01l-3-3" />
-                            </svg>
-                            Free forever
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-green-500"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <path d="M22 4 12 14.01l-3-3" />
-                            </svg>
-                            Setup in 60s
-                        </div>
-                    </div>
+        <!-- 2. Hero -->
+        <section class="px-6 pb-20 pt-24 md:pb-28 md:pt-32">
+            <div class="mx-auto max-w-3xl text-center">
+                <div class="mb-6 flex justify-center">
+                    <img src="/assets/imgs/maylbox-logo-icon.png" alt="Maylbox" class="h-14 w-auto" />
                 </div>
+                <h1 class="mb-5 text-4xl font-bold tracking-tight text-gray-900 md:text-6xl">
+                    The inbox that works for you
+                </h1>
+                <p class="mx-auto mb-8 max-w-2xl text-lg text-gray-500 md:text-xl">
+                    Connect your custom domain email to a modern client that syncs instantly,
+                    organizes effortlessly, and lets you focus on what matters.
+                </p>
+                <Link v-if="canRegister" href="/register">
+                    <Button size="lg" class="gap-2 px-8 text-base">
+                        Get Started Free
+                        <ArrowRight class="h-4 w-4" />
+                    </Button>
+                </Link>
+            </div>
 
-                <!-- Hero Image / Screenshot -->
-                <div class="relative">
-                    <div
-                        class="rounded-xl border border-sidebar-border bg-muted/30 p-4 shadow-2xl"
-                    >
-                        <div class="mb-3 flex items-center gap-2">
-                            <div class="h-3 w-3 rounded-full bg-red-500" />
-                            <div class="h-3 w-3 rounded-full bg-yellow-500" />
-                            <div class="h-3 w-3 rounded-full bg-green-500" />
+            <!-- Hero Inbox Mockup -->
+            <div class="mx-auto mt-16 max-w-5xl">
+                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl shadow-gray-200/50">
+                    <div class="flex items-center gap-2 border-b border-gray-100 bg-gray-50 px-4 py-3">
+                        <div class="h-3 w-3 rounded-full bg-gray-300" />
+                        <div class="h-3 w-3 rounded-full bg-gray-300" />
+                        <div class="h-3 w-3 rounded-full bg-gray-300" />
+                        <div class="ml-4 h-5 w-48 rounded bg-gray-200" />
+                    </div>
+                    <div class="flex" style="height: 380px">
+                        <!-- Sidebar -->
+                        <div class="hidden w-52 shrink-0 border-r border-gray-100 bg-gray-50/50 p-3 sm:block">
+                            <div class="mb-4 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2">
+                                <Inbox class="h-4 w-4 text-primary" />
+                                <span class="text-sm font-medium text-primary">Inbox</span>
+                                <span class="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white">12</span>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                    <div class="h-3.5 w-3.5 rounded bg-gray-200" />
+                                    Starred
+                                </div>
+                                <div class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                    <div class="h-3.5 w-3.5 rounded bg-gray-200" />
+                                    Sent
+                                </div>
+                                <div class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                    <div class="h-3.5 w-3.5 rounded bg-gray-200" />
+                                    Drafts
+                                </div>
+                                <Separator class="my-2" />
+                                <div class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-blue-400" />
+                                    Work
+                                </div>
+                                <div class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-400" />
+                                    Personal
+                                </div>
+                            </div>
                         </div>
-                        <div
-                            class="aspect-video rounded-lg border border-sidebar-border bg-background"
-                        >
-                            <!-- Simplified inbox preview -->
-                            <div class="flex h-full">
-                                <!-- Sidebar -->
-                                <div class="w-1/4 border-r border-sidebar-border p-3">
-                                    <div class="mb-2 rounded bg-primary/10 p-2 text-xs font-medium">
-                                        Inbox
-                                    </div>
-                                    <div class="space-y-1">
-                                        <div class="rounded bg-muted/50 p-2 text-xs">Sent</div>
-                                        <div class="rounded bg-muted/50 p-2 text-xs">Drafts</div>
-                                    </div>
+                        <!-- Email List -->
+                        <div class="w-72 shrink-0 border-r border-gray-100">
+                            <div class="border-b border-gray-100 px-3 py-2.5">
+                                <div class="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-1.5">
+                                    <Search class="h-3.5 w-3.5 text-gray-400" />
+                                    <span class="text-xs text-gray-400">Search emails...</span>
                                 </div>
-                                <!-- Email list -->
-                                <div class="flex-1 border-r border-sidebar-border">
-                                    <div
-                                        class="space-y-px border-b border-sidebar-border bg-background p-2"
-                                    >
-                                        <div class="rounded bg-muted/30 p-2">
-                                            <div class="mb-1 h-2 w-1/3 rounded bg-muted-foreground/30" />
-                                            <div class="h-2 w-full rounded bg-muted-foreground/20" />
-                                        </div>
-                                        <div class="rounded p-2">
-                                            <div class="mb-1 h-2 w-1/4 rounded bg-muted-foreground/30" />
-                                            <div class="h-2 w-5/6 rounded bg-muted-foreground/20" />
-                                        </div>
-                                        <div class="rounded p-2">
-                                            <div class="mb-1 h-2 w-1/3 rounded bg-muted-foreground/30" />
-                                            <div class="h-2 w-4/5 rounded bg-muted-foreground/20" />
-                                        </div>
+                            </div>
+                            <div class="divide-y divide-gray-50">
+                                <div class="bg-primary/5 px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-semibold text-gray-900">Sarah Chen</span>
+                                        <span class="text-[10px] text-gray-400">2m ago</span>
                                     </div>
+                                    <div class="mt-0.5 text-xs font-medium text-gray-700">Q1 Planning Review</div>
+                                    <div class="mt-0.5 text-xs text-gray-400">Here's the updated timeline for...</div>
                                 </div>
-                                <!-- Email viewer -->
-                                <div class="flex-1 p-3">
-                                    <div class="mb-3 h-3 w-3/4 rounded bg-muted-foreground/30" />
-                                    <div class="space-y-2">
-                                        <div class="h-2 w-full rounded bg-muted-foreground/20" />
-                                        <div class="h-2 w-full rounded bg-muted-foreground/20" />
-                                        <div class="h-2 w-2/3 rounded bg-muted-foreground/20" />
+                                <div class="px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-900">Alex Rivera</span>
+                                        <span class="text-[10px] text-gray-400">1h ago</span>
+                                    </div>
+                                    <div class="mt-0.5 text-xs text-gray-600">Design system updates</div>
+                                    <div class="mt-0.5 text-xs text-gray-400">I've pushed the new component...</div>
+                                </div>
+                                <div class="px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-900">Jordan Park</span>
+                                        <span class="text-[10px] text-gray-400">3h ago</span>
+                                    </div>
+                                    <div class="mt-0.5 text-xs text-gray-600">Lunch tomorrow?</div>
+                                    <div class="mt-0.5 text-xs text-gray-400">Want to try that new place...</div>
+                                </div>
+                                <div class="px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Priya Sharma</span>
+                                        <span class="text-[10px] text-gray-400">5h ago</span>
+                                    </div>
+                                    <div class="mt-0.5 text-xs text-gray-600">Invoice #4821</div>
+                                    <div class="mt-0.5 text-xs text-gray-400">Please find attached the...</div>
+                                </div>
+                                <div class="px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700">Mike Thompson</span>
+                                        <span class="text-[10px] text-gray-400">1d ago</span>
+                                    </div>
+                                    <div class="mt-0.5 text-xs text-gray-600">Re: API Documentation</div>
+                                    <div class="mt-0.5 text-xs text-gray-400">Looks good! Just a few minor...</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Email Viewer -->
+                        <div class="hidden flex-1 p-6 md:block">
+                            <div class="mb-1 flex items-center justify-between">
+                                <h3 class="text-base font-semibold text-gray-900">Q1 Planning Review</h3>
+                                <span class="text-xs text-gray-400">Today, 10:34 AM</span>
+                            </div>
+                            <div class="mb-4 flex items-center gap-2">
+                                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-violet-100 text-[10px] font-medium text-violet-700">SC</div>
+                                <span class="text-xs text-gray-500">Sarah Chen &lt;sarah@acme.co&gt;</span>
+                            </div>
+                            <div class="space-y-2.5 text-sm leading-relaxed text-gray-600">
+                                <p>Hi team,</p>
+                                <p>Here's the updated timeline for Q1. I've made adjustments based on our last discussion and moved the design milestone up by two weeks.</p>
+                                <p>Key changes:</p>
+                                <div class="space-y-1 pl-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-1 w-1 rounded-full bg-gray-400" />
+                                        <span class="text-xs text-gray-500">Design review moved to Jan 15</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-1 w-1 rounded-full bg-gray-400" />
+                                        <span class="text-xs text-gray-500">Beta launch target: Feb 1</span>
                                     </div>
                                 </div>
                             </div>
@@ -182,301 +202,590 @@ defineProps<{
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="border-t border-sidebar-border bg-muted/30 py-20">
-            <div class="mx-auto max-w-7xl px-6">
-                <div class="mb-16 text-center">
-                    <h2 class="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-                        Everything you need. Nothing you don't.
-                    </h2>
-                    <p class="text-lg text-muted-foreground">
-                        No fluff. No startup cosplay. Just a solid email client.
-                    </p>
-                </div>
-
-                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    <!-- Feature 1 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Quick Setup
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Connect via OAuth (Gmail, Outlook) or IMAP in seconds. Auto-detection for common providers.
+        <!-- 3. Social Proof / Testimonials -->
+        <section class="bg-gray-50 px-6 py-20 md:py-24">
+            <div class="mx-auto max-w-5xl">
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6">
+                        <p class="mb-4 text-gray-700">
+                            "Switched from Roundcube to Maylbox and it's night and day. The interface is clean,
+                            fast, and actually enjoyable to use with my custom domain."
                         </p>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-medium text-blue-700">JM</div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">James Mitchell</div>
+                                <div class="text-xs text-gray-500">Freelance Developer</div>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Feature 2 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="17 8 12 3 7 8" />
-                                <line x1="12" x2="12" y1="3" y2="15" />
-                            </svg>
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Custom Domain
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Use your own domain email. We're a client, not a host. Keep your existing provider.
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6">
+                        <p class="mb-4 text-gray-700">
+                            "Finally, a web email client that doesn't look like it was built in 2005.
+                            IMAP setup took 30 seconds and everything just synced."
                         </p>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-sm font-medium text-emerald-700">AL</div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Aisha Lopez</div>
+                                <div class="text-xs text-gray-500">Startup Founder</div>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Feature 3 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Privacy First
-                        </h3>
-                        <p class="text-muted-foreground">
-                            End-to-end encryption. Your credentials never touch our servers. OAuth 2.0 security.
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6">
+                        <p class="mb-4 text-gray-700">
+                            "I manage three domains for my business and Maylbox handles them all
+                            beautifully. The threading and search make it a breeze."
                         </p>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-amber-100 text-sm font-medium text-amber-700">DK</div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Daniel Kim</div>
+                                <div class="text-xs text-gray-500">Agency Owner</div>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Feature 4 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                            </svg>
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Smart Threading
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Conversation view that actually works. Collapse, expand, and navigate threads effortlessly.
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6">
+                        <p class="mb-4 text-gray-700">
+                            "We moved our whole team off a clunky webmail solution. Maylbox is fast,
+                            modern, and the security features gave us peace of mind."
                         </p>
-                    </div>
-
-                    <!-- Feature 5 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="m21 21-4.35-4.35" />
-                            </svg>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-sm font-medium text-rose-700">RP</div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Rachel Patel</div>
+                                <div class="text-xs text-gray-500">Head of Operations</div>
+                            </div>
                         </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Powerful Search
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Find anything instantly. Search across subject, body, sender, and recipients in real-time.
-                        </p>
-                    </div>
-
-                    <!-- Feature 6 -->
-                    <div class="rounded-lg border border-sidebar-border bg-background p-6">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                                <line x1="7" x2="7.01" y1="7" y2="7" />
-                            </svg>
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Labels & Organization
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Create custom labels with colors. Filter and organize your inbox your way.
-                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- How It Works -->
-        <section class="py-20">
-            <div class="mx-auto max-w-7xl px-6">
-                <div class="mb-16 text-center">
-                    <h2 class="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-                        From zero to inbox in 60 seconds
-                    </h2>
-                    <p class="text-lg text-muted-foreground">
-                        The fastest way to get your custom domain email working
-                    </p>
+        <!-- 4. Feature: Auto-Organize -->
+        <section id="features" class="px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-5xl">
+                <div class="mb-4 flex items-center justify-center gap-2 text-2xl">
+                    <span>📂</span>
+                    <Sparkles class="h-5 w-5 text-amber-500" />
                 </div>
-
-                <div class="grid gap-8 md:grid-cols-3">
-                    <!-- Step 1 -->
-                    <div class="relative">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-                            1
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Sign Up
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Create your account in seconds. No credit card required.
-                        </p>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="relative">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-                            2
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Connect Email
-                        </h3>
-                        <p class="text-muted-foreground">
-                            OAuth for Gmail/Outlook or IMAP for custom domains. Auto-detection included.
-                        </p>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="relative">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-                            3
-                        </div>
-                        <h3 class="mb-2 text-xl font-semibold text-foreground">
-                            Start Emailing
-                        </h3>
-                        <p class="text-muted-foreground">
-                            Your inbox syncs instantly. Compose, reply, and organize from a modern interface.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="border-t border-sidebar-border bg-primary/5 py-20">
-            <div class="mx-auto max-w-4xl px-6 text-center">
-                <h2 class="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-                    Ready to upgrade your email?
+                <h2 class="mb-4 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    Every email organized, automatically.
                 </h2>
-                <p class="mb-8 text-lg text-muted-foreground">
-                    Join thousands using Maylbox for their custom domain email.
+                <p class="mx-auto mb-12 max-w-2xl text-center text-gray-500">
+                    Maylbox intelligently categorizes your incoming mail so your inbox stays
+                    clean. Labels, folders, and smart filters work together to surface what matters.
                 </p>
-                <div class="flex flex-col justify-center gap-4 sm:flex-row">
-                    <Link v-if="canRegister" href="/register">
-                        <Button size="lg" class="w-full sm:w-auto">
-                            Get Started Free
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="ml-2 h-5 w-5"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </Button>
-                    </Link>
-                    <Link href="/login">
-                        <Button size="lg" variant="outline" class="w-full sm:w-auto">
-                            Sign In
-                        </Button>
-                    </Link>
+
+                <div class="mb-12 grid items-center gap-10 md:grid-cols-2">
+                    <!-- Left: Inbox mockup with labels -->
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                        <div class="border-b border-gray-100 bg-gray-50 px-4 py-2.5">
+                            <span class="text-xs font-medium text-gray-500">Inbox — Auto-categorized</span>
+                        </div>
+                        <div class="divide-y divide-gray-50">
+                            <div class="flex items-center gap-3 px-4 py-3">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-[10px] font-medium text-blue-600">T</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900">Team standup notes</div>
+                                    <div class="text-xs text-gray-400">Morning sync summary...</div>
+                                </div>
+                                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">Work</span>
+                            </div>
+                            <div class="flex items-center gap-3 px-4 py-3">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-full bg-green-100 text-[10px] font-medium text-green-600">S</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900">Your order has shipped</div>
+                                    <div class="text-xs text-gray-400">Tracking number: 1Z...</div>
+                                </div>
+                                <span class="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">Shopping</span>
+                            </div>
+                            <div class="flex items-center gap-3 px-4 py-3">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-100 text-[10px] font-medium text-purple-600">N</div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900">Weekly tech digest</div>
+                                    <div class="text-xs text-gray-400">Top stories this week...</div>
+                                </div>
+                                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-700">Newsletter</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Description -->
+                    <div>
+                        <h3 class="mb-3 text-xl font-semibold text-gray-900">Smart categorization</h3>
+                        <p class="text-gray-500">
+                            Incoming emails are automatically tagged and routed based on sender, subject,
+                            and content. Create custom rules or let Maylbox's defaults handle the sorting
+                            — so you spend less time organizing and more time doing.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Two side-by-side cards -->
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <div class="border-b border-gray-100 px-5 py-4">
+                            <h4 class="text-sm font-semibold text-gray-900">Split your inbox into custom views</h4>
+                            <p class="mt-1 text-xs text-gray-500">Tabs for every category you care about</p>
+                        </div>
+                        <div class="bg-gray-50 p-4">
+                            <div class="flex gap-2">
+                                <span class="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">All</span>
+                                <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">Work</span>
+                                <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">Personal</span>
+                                <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">Updates</span>
+                            </div>
+                            <div class="mt-3 space-y-2">
+                                <div class="h-8 rounded-lg bg-white ring-1 ring-gray-100" />
+                                <div class="h-8 rounded-lg bg-white ring-1 ring-gray-100" />
+                                <div class="h-8 rounded-lg bg-white ring-1 ring-gray-100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <div class="border-b border-gray-100 px-5 py-4">
+                            <h4 class="text-sm font-semibold text-gray-900">Group and filter by topic, sender, label</h4>
+                            <p class="mt-1 text-xs text-gray-500">Find exactly what you need, fast</p>
+                        </div>
+                        <div class="bg-gray-50 p-4">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">
+                                    <Tag class="h-3 w-3" /> Work
+                                </span>
+                                <span class="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">
+                                    <div class="h-2 w-2 rounded-full bg-blue-400" /> From: team
+                                </span>
+                                <span class="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200">
+                                    <div class="h-2 w-2 rounded-full bg-green-400" /> Has attachment
+                                </span>
+                            </div>
+                            <div class="mt-3 space-y-2">
+                                <div class="h-8 rounded-lg bg-white ring-1 ring-gray-100" />
+                                <div class="h-8 rounded-lg bg-white ring-1 ring-gray-100" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="border-t border-sidebar-border py-12">
-            <div class="mx-auto max-w-7xl px-6">
-                <div class="grid gap-8 md:grid-cols-4">
-                    <div>
-                        <div class="mb-4 flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <rect x="2" y="4" width="20" height="16" rx="2" />
-                                <path d="m2 7 10 7 10-7" />
-                            </svg>
-                            <span class="text-lg font-bold text-foreground">Maylbox</span>
+        <!-- 5. Feature: Smart Compose -->
+        <section class="bg-gray-50 px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-5xl">
+                <h2 class="mb-12 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    Every reply drafted, quickly.
+                </h2>
+                <div class="grid items-center gap-10 md:grid-cols-2">
+                    <!-- Left: Feature list -->
+                    <div class="space-y-5">
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                                <Zap class="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-900">Snippets</h4>
+                                <p class="text-sm text-gray-500">Save and reuse common replies with a quick shortcut.</p>
+                            </div>
                         </div>
-                        <p class="text-sm text-muted-foreground">
-                            Email that just works. Custom domain. Modern interface.
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                                <Send class="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-900">Quick replies</h4>
+                                <p class="text-sm text-gray-500">Respond in one click with smart suggested replies.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                                <Inbox class="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-900">Smart threading</h4>
+                                <p class="text-sm text-gray-500">Conversations grouped automatically so you never lose context.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                                <FolderOpen class="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-900">Labels & organization</h4>
+                                <p class="text-sm text-gray-500">Color-coded labels and folders to keep everything in its place.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Compose mockup -->
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                        <div class="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-4 py-3">
+                            <span class="text-sm font-medium text-gray-700">New Message</span>
+                            <div class="flex gap-1.5">
+                                <div class="h-2 w-2 rounded-full bg-gray-300" />
+                                <div class="h-2 w-2 rounded-full bg-gray-300" />
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
+                                <span class="text-xs text-gray-400">To:</span>
+                                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">sarah@acme.co</span>
+                            </div>
+                            <div class="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
+                                <span class="text-xs text-gray-400">Subject:</span>
+                                <span class="text-xs text-gray-700">Re: Q1 Planning Review</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p>Hi Sarah,</p>
+                                <p>Thanks for sending this over. The updated timeline looks great — I'm aligned with moving the design review up.</p>
+                                <p>I'll share the revised resource plan by EOD tomorrow.</p>
+                                <p class="text-gray-400">Best,<br />You</p>
+                            </div>
+                            <div class="mt-4 flex items-center gap-2">
+                                <div class="rounded-lg bg-primary px-4 py-1.5 text-xs font-medium text-white">Send</div>
+                                <div class="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-500">Attach</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CTA: Connect Your Email -->
+        <section class="px-6 py-20 md:py-24">
+            <div class="mx-auto max-w-2xl text-center">
+                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+                    Made for speed. Connect your email and see for yourself.
+                </h2>
+                <div class="mb-8 flex items-center justify-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200 bg-gray-50">
+                        <Mail class="h-6 w-6 text-gray-400" />
+                    </div>
+                    <ArrowRight class="h-5 w-5 text-gray-300" />
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5">
+                        <img src="/assets/imgs/maylbox-logo-icon.png" alt="Maylbox" class="h-8 w-auto" />
+                    </div>
+                </div>
+                <Link v-if="canRegister" href="/register">
+                    <Button size="lg" class="gap-2 px-8">
+                        Get Started Free
+                        <ArrowRight class="h-4 w-4" />
+                    </Button>
+                </Link>
+            </div>
+        </section>
+
+        <!-- 7. Feature: Modern Editor -->
+        <section class="bg-gray-50 px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-5xl">
+                <div class="mb-4 flex justify-center">
+                    <PenLine class="h-6 w-6 text-primary" />
+                </div>
+                <h2 class="mb-4 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    It feels just like a native app.
+                </h2>
+                <p class="mx-auto mb-12 max-w-2xl text-center text-gray-500">
+                    Quickly compose beautiful emails with a clean, modern editor.
+                </p>
+
+                <!-- Editor Mockup -->
+                <div class="mx-auto max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                    <div class="flex items-center gap-3 border-b border-gray-100 px-5 py-3">
+                        <div class="flex gap-1.5">
+                            <div class="h-3 w-3 rounded-full bg-gray-200" />
+                            <div class="h-3 w-3 rounded-full bg-gray-200" />
+                            <div class="h-3 w-3 rounded-full bg-gray-200" />
+                        </div>
+                    </div>
+                    <div class="border-b border-gray-100 px-5 py-3">
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                            <span class="font-medium text-gray-600">B</span>
+                            <span class="italic text-gray-600">I</span>
+                            <span class="text-gray-600 underline">U</span>
+                            <Separator orientation="vertical" class="h-4" />
+                            <span>Link</span>
+                            <span>Image</span>
+                            <span>List</span>
+                            <span>Quote</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3 text-sm leading-relaxed text-gray-600">
+                            <p>Hey team,</p>
+                            <p>Quick update on the project — we've wrapped up the design phase and the dev sprint starts Monday. Here's what's coming:</p>
+                            <div class="rounded-lg border-l-2 border-primary/30 bg-primary/5 p-3 text-sm text-gray-600">
+                                "The new dashboard design reduces average task completion time by 40%."
+                            </div>
+                            <p>I'll send the full brief by Friday. Let me know if you have questions.</p>
+                            <p class="text-gray-400">— Team Lead</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-100 px-5 py-3">
+                        <div class="flex gap-2">
+                            <div class="h-7 w-7 rounded bg-gray-100" />
+                            <div class="h-7 w-7 rounded bg-gray-100" />
+                        </div>
+                        <div class="rounded-lg bg-primary px-5 py-1.5 text-xs font-medium text-white">Send</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Feature: Works Everywhere -->
+        <section class="px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-5xl">
+                <h2 class="mb-4 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    Available anywhere. Just open your browser.
+                </h2>
+                <p class="mx-auto mb-12 max-w-2xl text-center text-gray-500">
+                    No downloads required. Works on any device with a browser.
+                </p>
+
+                <div class="grid gap-6 md:grid-cols-2">
+                    <!-- Desktop mockup -->
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <div class="flex items-center gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2.5">
+                            <Monitor class="h-4 w-4 text-gray-400" />
+                            <span class="text-xs font-medium text-gray-500">Desktop</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="overflow-hidden rounded-lg border border-gray-200">
+                                <div class="flex h-48">
+                                    <div class="w-1/4 border-r border-gray-100 bg-gray-50 p-2">
+                                        <div class="mb-1.5 h-5 rounded bg-primary/10" />
+                                        <div class="space-y-1">
+                                            <div class="h-4 rounded bg-gray-100" />
+                                            <div class="h-4 rounded bg-gray-100" />
+                                            <div class="h-4 rounded bg-gray-100" />
+                                        </div>
+                                    </div>
+                                    <div class="w-1/3 border-r border-gray-100 p-2">
+                                        <div class="space-y-1.5">
+                                            <div class="rounded bg-primary/5 p-1.5">
+                                                <div class="mb-1 h-2 w-2/3 rounded bg-gray-300" />
+                                                <div class="h-2 w-full rounded bg-gray-200" />
+                                            </div>
+                                            <div class="rounded p-1.5">
+                                                <div class="mb-1 h-2 w-1/2 rounded bg-gray-200" />
+                                                <div class="h-2 w-full rounded bg-gray-100" />
+                                            </div>
+                                            <div class="rounded p-1.5">
+                                                <div class="mb-1 h-2 w-3/4 rounded bg-gray-200" />
+                                                <div class="h-2 w-full rounded bg-gray-100" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 p-2">
+                                        <div class="mb-2 h-3 w-3/4 rounded bg-gray-300" />
+                                        <div class="space-y-1.5">
+                                            <div class="h-2 w-full rounded bg-gray-100" />
+                                            <div class="h-2 w-full rounded bg-gray-100" />
+                                            <div class="h-2 w-2/3 rounded bg-gray-100" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mobile mockup -->
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <div class="flex items-center gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2.5">
+                            <Smartphone class="h-4 w-4 text-gray-400" />
+                            <span class="text-xs font-medium text-gray-500">Mobile</span>
+                        </div>
+                        <div class="flex justify-center p-4">
+                            <div class="w-48 overflow-hidden rounded-2xl border-2 border-gray-200">
+                                <div class="bg-gray-50 px-3 py-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-semibold text-gray-700">Inbox</span>
+                                        <Search class="h-3 w-3 text-gray-400" />
+                                    </div>
+                                </div>
+                                <div class="divide-y divide-gray-50">
+                                    <div class="px-3 py-2.5">
+                                        <div class="mb-0.5 h-2 w-2/3 rounded bg-gray-300" />
+                                        <div class="mb-0.5 h-1.5 w-full rounded bg-gray-200" />
+                                        <div class="h-1.5 w-3/4 rounded bg-gray-100" />
+                                    </div>
+                                    <div class="px-3 py-2.5">
+                                        <div class="mb-0.5 h-2 w-1/2 rounded bg-gray-300" />
+                                        <div class="mb-0.5 h-1.5 w-full rounded bg-gray-200" />
+                                        <div class="h-1.5 w-2/3 rounded bg-gray-100" />
+                                    </div>
+                                    <div class="px-3 py-2.5">
+                                        <div class="mb-0.5 h-2 w-3/4 rounded bg-gray-300" />
+                                        <div class="mb-0.5 h-1.5 w-full rounded bg-gray-200" />
+                                        <div class="h-1.5 w-1/2 rounded bg-gray-100" />
+                                    </div>
+                                    <div class="px-3 py-2.5">
+                                        <div class="mb-0.5 h-2 w-2/3 rounded bg-gray-200" />
+                                        <div class="mb-0.5 h-1.5 w-full rounded bg-gray-100" />
+                                        <div class="h-1.5 w-3/4 rounded bg-gray-100" />
+                                    </div>
+                                </div>
+                                <div class="flex justify-center bg-gray-50 py-1.5">
+                                    <div class="h-1 w-12 rounded-full bg-gray-300" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Security Section -->
+        <section id="security" class="bg-gray-50 px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-5xl">
+                <h2 class="mb-12 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    Built with data security in mind.
+                </h2>
+                <div class="grid gap-8 md:grid-cols-3">
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 text-center">
+                        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <Shield class="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 class="mb-2 text-base font-semibold text-gray-900">Your credentials, encrypted.</h3>
+                        <p class="text-sm text-gray-500">
+                            Email credentials are encrypted at rest and in transit. We never store your password in plain text.
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 text-center">
+                        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <Lock class="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 class="mb-2 text-base font-semibold text-gray-900">No training on your data.</h3>
+                        <p class="text-sm text-gray-500">
+                            Your emails are yours. We don't use your content to train models or sell data to third parties.
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 text-center">
+                        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <Globe class="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 class="mb-2 text-base font-semibold text-gray-900">OAuth 2.0 & IMAP over SSL.</h3>
+                        <p class="text-sm text-gray-500">
+                            Industry-standard protocols ensure your connection is always secure and authenticated.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. FAQ -->
+        <section id="faq" class="px-6 py-20 md:py-28">
+            <div class="mx-auto max-w-2xl">
+                <h2 class="mb-10 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    Questions & answers
+                </h2>
+                <Accordion type="single" collapsible class="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger class="text-left text-base text-gray-900">
+                            What email providers are compatible with Maylbox?
+                        </AccordionTrigger>
+                        <AccordionContent class="text-gray-500">
+                            Maylbox works with any email provider that supports IMAP — including Gmail,
+                            Outlook, Yahoo, Zoho, Fastmail, and custom domain hosting services like
+                            Namecheap, MXRoute, and more. If your provider supports IMAP, Maylbox can connect to it.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger class="text-left text-base text-gray-900">
+                            Is Maylbox free to use?
+                        </AccordionTrigger>
+                        <AccordionContent class="text-gray-500">
+                            Yes! Maylbox offers a free tier that covers most use cases. You can connect
+                            your email account and use all core features — reading, composing, organizing,
+                            and searching — at no cost.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-3">
+                        <AccordionTrigger class="text-left text-base text-gray-900">
+                            How does IMAP connection work?
+                        </AccordionTrigger>
+                        <AccordionContent class="text-gray-500">
+                            When you connect an account, Maylbox uses your IMAP credentials to sync your
+                            email in real-time. Your messages stay on your provider's servers — we act as a
+                            client, not a host. All connections are encrypted using SSL/TLS.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-4">
+                        <AccordionTrigger class="text-left text-base text-gray-900">
+                            Can I connect multiple email accounts?
+                        </AccordionTrigger>
+                        <AccordionContent class="text-gray-500">
+                            Absolutely. You can connect multiple email accounts from different providers and
+                            switch between them seamlessly within the Maylbox interface. Each account syncs
+                            independently.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-5">
+                        <AccordionTrigger class="text-left text-base text-gray-900">
+                            Is my email data stored on your servers?
+                        </AccordionTrigger>
+                        <AccordionContent class="text-gray-500">
+                            Maylbox caches email metadata (like subjects and senders) to provide a fast
+                            experience, but your full email content remains on your provider's servers.
+                            Cached data is encrypted and you can clear it at any time.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+        </section>
+
+        <!-- 11. Footer -->
+        <footer class="border-t border-gray-200 bg-white px-6 py-16">
+            <div class="mx-auto max-w-5xl">
+                <div class="grid gap-10 md:grid-cols-4">
+                    <div>
+                        <div class="mb-3 flex items-center gap-2">
+                            <img src="/assets/imgs/maylbox-logo-icon.png" alt="Maylbox" class="h-6 w-auto" />
+                            <span class="text-base font-semibold text-gray-900">Maylbox</span>
+                        </div>
+                        <p class="text-sm text-gray-500">
+                            A modern email client for custom domain users. Connect via IMAP and enjoy a fast, clean inbox.
                         </p>
                     </div>
                     <div>
-                        <h4 class="mb-4 font-semibold text-foreground">Product</h4>
-                        <ul class="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" class="hover:text-foreground">Features</a></li>
-                            <li><a href="#" class="hover:text-foreground">Pricing</a></li>
-                            <li><a href="#" class="hover:text-foreground">Security</a></li>
-                            <li><a href="#" class="hover:text-foreground">Roadmap</a></li>
+                        <h4 class="mb-3 text-sm font-semibold text-gray-900">Product</h4>
+                        <ul class="space-y-2 text-sm text-gray-500">
+                            <li><a href="#features" class="transition hover:text-gray-900">Features</a></li>
+                            <li><a href="#security" class="transition hover:text-gray-900">Security</a></li>
+                            <li><a href="#faq" class="transition hover:text-gray-900">FAQ</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="mb-4 font-semibold text-foreground">Resources</h4>
-                        <ul class="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" class="hover:text-foreground">Documentation</a></li>
-                            <li><a href="#" class="hover:text-foreground">API Reference</a></li>
-                            <li><a href="#" class="hover:text-foreground">Support</a></li>
-                            <li><a href="#" class="hover:text-foreground">Blog</a></li>
+                        <h4 class="mb-3 text-sm font-semibold text-gray-900">Resources</h4>
+                        <ul class="space-y-2 text-sm text-gray-500">
+                            <li><a href="#" class="transition hover:text-gray-900">Documentation</a></li>
+                            <li><a href="#" class="transition hover:text-gray-900">Support</a></li>
+                            <li><a href="#" class="transition hover:text-gray-900">Blog</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="mb-4 font-semibold text-foreground">Company</h4>
-                        <ul class="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" class="hover:text-foreground">About</a></li>
-                            <li><a href="#" class="hover:text-foreground">Privacy</a></li>
-                            <li><a href="#" class="hover:text-foreground">Terms</a></li>
-                            <li><a href="#" class="hover:text-foreground">Contact</a></li>
+                        <h4 class="mb-3 text-sm font-semibold text-gray-900">Company</h4>
+                        <ul class="space-y-2 text-sm text-gray-500">
+                            <li><a href="#" class="transition hover:text-gray-900">About</a></li>
+                            <li><a href="#" class="transition hover:text-gray-900">Privacy</a></li>
+                            <li><a href="#" class="transition hover:text-gray-900">Terms</a></li>
+                            <li><a href="#" class="transition hover:text-gray-900">Contact</a></li>
                         </ul>
                     </div>
                 </div>
-                <div class="mt-12 border-t border-sidebar-border pt-8 text-center text-sm text-muted-foreground">
-                    © 2026 Maylbox. All rights reserved.
+                <Separator class="my-8" />
+                <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+                    <p class="text-sm text-gray-400">&copy; 2026 Maylbox. All rights reserved.</p>
+                    <div class="flex items-center gap-4">
+                        <!-- Twitter/X -->
+                        <a href="#" class="text-gray-400 transition hover:text-gray-600">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                        <!-- GitHub -->
+                        <a href="#" class="text-gray-400 transition hover:text-gray-600">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>
