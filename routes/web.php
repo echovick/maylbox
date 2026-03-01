@@ -66,6 +66,7 @@ Route::middleware(['auth'])->prefix('api')->group(function () {
     Route::get('emails', [\App\Http\Controllers\EmailController::class, 'index']);
     Route::get('emails/{email}', [\App\Http\Controllers\EmailController::class, 'show']);
     Route::patch('emails/{email}', [\App\Http\Controllers\EmailController::class, 'update']);
+    Route::post('emails/send', \App\Http\Controllers\SendEmailController::class);
 
     // Sync
     Route::post('email-accounts/{emailAccount}/sync', [\App\Http\Controllers\SyncController::class, 'sync']);

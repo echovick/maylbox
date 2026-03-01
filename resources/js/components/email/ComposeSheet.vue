@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +11,11 @@ import {
     SheetTitle,
 } from '@/components/ui/sheet';
 import { useCompose } from '@/composables/useCompose';
+import { useEmails } from '@/composables/useEmails';
 
 const {
     isComposing,
+    isSending,
     draft,
     canSend,
     closeCompose,
@@ -25,13 +27,52 @@ const {
     removeAttachment,
 } = useCompose();
 
+const { currentAccountId } = useEmails();
+
 // Local state
 const toInput = ref('');
 const ccInput = ref('');
 const bccInput = ref('');
 const showCc = ref(false);
 const showBcc = ref(false);
-const isSending = ref(false);
+const isEditingName = ref(false);
+const nameInput = ref<HTMLInputElement | null>(null);
+
+const startEditingName = async () => {
+    isEditingName.value = true;
+    await nextTick();
+    nameInput.value?.focus();
+    nameInput.value?.select();
+};
+
+const saveFromName = async () => {
+    isEditingName.value = false;
+    if (!currentAccountId.value || !draft.value.from?.name) return;
+
+    try {
+        await fetch(`/api/email-accounts/${currentAccountId.value}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-XSRF-TOKEN': decodeURIComponent(
+                    document.cookie.match(/XSRF-TOKEN=([^;]*)/)?.[1] || '',
+                ),
+            },
+            body: JSON.stringify({ name: draft.value.from.name }),
+        });
+    } catch {
+        // Silently fail — name is still used for the current send
+    }
+};
+
+const handleNameKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        saveFromName();
+    }
+};
 
 // File upload
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -76,13 +117,8 @@ const handleBccKeydown = (e: KeyboardEvent) => {
 };
 
 const handleSend = async () => {
-    if (!canSend.value) return;
-
-    isSending.value = true;
-    // Simulate sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    sendEmail();
-    isSending.value = false;
+    if (!canSend.value || isSending.value) return;
+    await sendEmail();
 };
 
 const handleSaveDraft = () => {
@@ -135,8 +171,39 @@ const triggerFileSelect = () => {
                     <Label class="w-20 shrink-0 text-sm text-muted-foreground">
                         From
                     </Label>
-                    <div class="text-sm text-foreground">
-                        {{ draft.from.email }}
+                    <div class="flex flex-1 items-center gap-1">
+                        <template v-if="isEditingName">
+                            <input
+                                ref="nameInput"
+                                v-model="draft.from.name"
+                                type="text"
+                                placeholder="Your name"
+                                class="h-7 w-48 rounded border border-sidebar-border bg-transparent px-2 text-sm text-foreground outline-none"
+                                @blur="saveFromName"
+                                @keydown="handleNameKeydown"
+                            />
+                        </template>
+                        <template v-else>
+                            <span class="text-sm text-foreground">{{ draft.from.name || draft.from.email }}</span>
+                            <button
+                                type="button"
+                                class="ml-1 text-muted-foreground hover:text-foreground"
+                                @click="startEditingName"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3.5 w-3.5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                    <path d="m15 5 4 4" />
+                                </svg>
+                            </button>
+                        </template>
+                        <span class="text-sm text-muted-foreground">&lt;{{ draft.from.email }}&gt;</span>
                     </div>
                 </div>
 
