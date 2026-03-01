@@ -16,15 +16,22 @@ class ImapSyncService
 
     public function connect(EmailAccount $account): void
     {
+        $password = $account->imap_password;
+
+        if ($account->type === 'oauth') {
+            $tokenService = app(OAuthTokenService::class);
+            $password = $tokenService->refreshIfNeeded($account);
+        }
+
         $this->client = Client::make([
             'host' => $account->imap_host,
             'port' => $account->imap_port,
             'encryption' => $account->imap_encryption === 'none' ? false : $account->imap_encryption,
             'validate_cert' => true,
             'username' => $account->imap_username ?: $account->email,
-            'password' => $account->imap_password,
+            'password' => $password,
             'protocol' => 'imap',
-            'authentication' => null,
+            'authentication' => $account->type === 'oauth' ? 'oauth' : null,
         ]);
 
         $this->client->connect();

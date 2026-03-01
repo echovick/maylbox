@@ -20,6 +20,7 @@
         "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "socialiteproviders/microsoft": "^4.8",
         "webklex/laravel-imap": "^6.2"
     },
     "require-dev": {

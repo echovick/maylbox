@@ -127,24 +127,19 @@ const goBack = () => {
 };
 
 const connectOAuth = () => {
+    if (!selectedProvider.value) return;
+
     isConnecting.value = true;
     error.value = null;
 
-    // TODO: Implement actual OAuth flow per provider
-    const provider = selectedProviderData();
-    setTimeout(() => {
-        const accountData = {
-            type: 'oauth',
-            provider: selectedProvider.value,
-            email: props.prefillEmail || `user@${selectedProvider.value}.com`,
-            name: `My ${provider?.name} Account`,
-            access_token: 'oauth_access_token_here',
-            refresh_token: 'oauth_refresh_token_here',
-        };
+    const providerMap: Record<string, string> = {
+        gmail: 'google',
+        outlook: 'microsoft',
+    };
+    const driver = providerMap[selectedProvider.value];
+    if (!driver) return;
 
-        emit('connect', accountData);
-        isConnecting.value = false;
-    }, 1500);
+    window.location.href = `/email-accounts/oauth/${driver}/redirect`;
 };
 
 const connectImap = () => {

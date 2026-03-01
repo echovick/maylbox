@@ -24,6 +24,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerSocialiteDrivers();
+    }
+
+    protected function registerSocialiteDrivers(): void
+    {
+        $socialite = $this->app->make(\Laravel\Socialite\Contracts\Factory::class);
+        $socialite->extend('microsoft', function () use ($socialite) {
+            $config = config('services.microsoft');
+            return $socialite->buildProvider(
+                \SocialiteProviders\Microsoft\Provider::class,
+                $config,
+            );
+        });
     }
 
     /**

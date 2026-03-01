@@ -3,8 +3,9 @@ import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ConnectAccount from '@/components/email/ConnectAccount.vue';
 
-defineProps<{
+const props = defineProps<{
     userEmail: string;
+    hasAccounts: boolean;
 }>();
 
 const isSubmitting = ref(false);
@@ -53,7 +54,9 @@ const handleConnect = async (accountData: any) => {
 };
 
 const handleClose = () => {
-    // Stay on setup page — onboarding is required
+    if (props.hasAccounts) {
+        router.visit('/mail');
+    }
 };
 </script>
 
