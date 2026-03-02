@@ -18,8 +18,8 @@ class EmailAccountOAuthController extends Controller
             'imap_port' => 993,
             'imap_encryption' => 'ssl',
             'smtp_host' => 'smtp.gmail.com',
-            'smtp_port' => 587,
-            'smtp_encryption' => 'tls',
+            'smtp_port' => 465,
+            'smtp_encryption' => 'ssl',
         ],
         'microsoft' => [
             'provider_name' => 'outlook',
