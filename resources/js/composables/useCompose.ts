@@ -17,10 +17,11 @@ const draft = ref<ComposeDraft>({
 });
 
 export function useCompose() {
-    const { accounts } = useEmails();
+    const { accounts, currentAccountId } = useEmails();
 
     function getCurrentAccount() {
-        return accounts.value?.[0] || { email: '', name: '' };
+        const active = accounts.value?.find(a => String(a.id) === currentAccountId.value);
+        return active || accounts.value?.[0] || { email: '', name: '' };
     }
 
     // Actions
