@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\EmailAccountOAuthController;
 use App\Jobs\SyncEmailAccountJob;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -37,12 +38,11 @@ Route::get('mail', function () {
 })->middleware(['auth', 'has.email.account'])->name('mail');
 
 Route::get('account-setup', function () {
-    if (Schema::hasTable('email_accounts') && auth()->user()->emailAccounts()->count() > 0) {
-        return redirect()->route('mail');
-    }
+    $hasAccounts = Schema::hasTable('email_accounts') && auth()->user()->emailAccounts()->count() > 0;
 
     return Inertia::render('AccountSetup', [
         'userEmail' => auth()->user()->email ?? '',
+        'hasAccounts' => $hasAccounts,
     ]);
 })->middleware(['auth'])->name('account-setup');
 
@@ -50,6 +50,16 @@ Route::get('account-setup', function () {
 Route::middleware('guest')->where(['provider' => 'google|github'])->group(function () {
     Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
     Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+});
+
+// Email Account OAuth routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('email-accounts/oauth/{provider}/redirect', [EmailAccountOAuthController::class, 'redirect'])
+        ->where('provider', 'google|microsoft')
+        ->name('email-accounts.oauth.redirect');
+    Route::get('email-accounts/oauth/{provider}/callback', [EmailAccountOAuthController::class, 'callback'])
+        ->where('provider', 'google|microsoft')
+        ->name('email-accounts.oauth.callback');
 });
 
 // Email Account API routes

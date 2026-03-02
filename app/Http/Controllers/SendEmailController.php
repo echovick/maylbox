@@ -51,6 +51,14 @@ class SendEmailController extends Controller
         try {
             $messageId = $smtp->send($account, $validated);
         } catch (TransportExceptionInterface $e) {
+            logger()->error('SMTP send failed', [
+                'account_id' => $account->id,
+                'type' => $account->type,
+                'smtp_host' => $account->smtp_host,
+                'smtp_port' => $account->smtp_port,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'message' => $this->friendlyError($e),
             ], 422);

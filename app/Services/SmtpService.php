@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\EmailAccount;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Transport\Smtp\Auth\XOAuth2Authenticator;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
@@ -17,8 +19,30 @@ class SmtpService
      */
     public function send(EmailAccount $account, array $data): string
     {
-        $dsn = $this->buildDsn($account);
-        $transport = Transport::fromDsn($dsn);
+        if ($account->type === 'oauth') {
+            $tokenService = app(OAuthTokenService::class);
+            $accessToken = $tokenService->refreshIfNeeded($account);
+
+            // true = implicit SSL (port 465), null = STARTTLS (port 587), false = none
+            $tls = match ($account->smtp_encryption) {
+                'ssl' => true,
+                'tls' => null,
+                default => false,
+            };
+
+            $transport = new EsmtpTransport(
+                $account->smtp_host,
+                $account->smtp_port,
+                $tls,
+            );
+            $transport->setUsername($account->smtp_username ?: $account->email);
+            $transport->setPassword($accessToken);
+            $transport->setAuthenticators([new XOAuth2Authenticator()]);
+        } else {
+            $dsn = $this->buildDsn($account);
+            $transport = Transport::fromDsn($dsn);
+        }
+
         $mailer = new Mailer($transport);
 
         $fromName = $data['from_name'] ?? $account->name ?? '';

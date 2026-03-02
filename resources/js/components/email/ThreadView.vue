@@ -72,89 +72,24 @@ const handleForward = () => {
     <div class="flex h-full flex-col overflow-hidden bg-background">
         <!-- Header -->
         <div class="border-b border-sidebar-border px-4 py-3">
-            <div class="mb-2 flex items-center justify-between">
-                <!-- Back button (mobile) -->
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    class="md:hidden"
-                    @click="emit('close')"
+            <!-- Back button (mobile) -->
+            <Button
+                variant="ghost"
+                size="icon"
+                class="mb-2 md:hidden"
+                @click="emit('close')"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                </Button>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        :class="thread.emails.some(e => e.isStarred) ? 'text-yellow-500' : ''"
-                        @click="emit('toggleStar', thread.emails[thread.emails.length - 1].id)"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            :fill="thread.emails.some(e => e.isStarred) ? 'currentColor' : 'none'"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                    </Button>
-
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        @click="emit('delete', thread.emails[thread.emails.length - 1].id)"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </svg>
-                    </Button>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <Button variant="ghost" size="icon">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                >
-                                    <circle cx="12" cy="12" r="1" />
-                                    <circle cx="12" cy="5" r="1" />
-                                    <circle cx="12" cy="19" r="1" />
-                                </svg>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-                            <DropdownMenuItem>Move to folder</DropdownMenuItem>
-                            <DropdownMenuItem>Add label</DropdownMenuItem>
-                            <DropdownMenuItem>Print</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </div>
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+            </Button>
 
             <!-- Subject and participant count -->
             <h1 class="mb-1 text-lg font-semibold text-foreground">
@@ -347,28 +282,92 @@ const handleForward = () => {
 
         <!-- Action Footer -->
         <div class="border-t border-sidebar-border px-4 py-3">
-            <div class="flex gap-2">
-                <Button size="sm" @click="handleReply">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="mr-2 h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+            <div class="flex items-center justify-between">
+                <div class="flex gap-2">
+                    <Button size="sm" @click="handleReply">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="mr-2 h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M9 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5l-5 5z"
+                            />
+                        </svg>
+                        Reply
+                    </Button>
+                    <Button variant="outline" size="sm" @click="handleReplyAll">
+                        Reply All
+                    </Button>
+                    <Button variant="outline" size="sm" @click="handleForward">
+                        Forward
+                    </Button>
+                </div>
+
+                <div class="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        :class="thread.emails.some(e => e.isStarred) ? 'text-yellow-500' : ''"
+                        @click="emit('toggleStar', thread.emails[thread.emails.length - 1].id)"
                     >
-                        <path
-                            d="M9 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5l-5 5z"
-                        />
-                    </svg>
-                    Reply
-                </Button>
-                <Button variant="outline" size="sm" @click="handleReplyAll">
-                    Reply All
-                </Button>
-                <Button variant="outline" size="sm" @click="handleForward">
-                    Forward
-                </Button>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            :fill="thread.emails.some(e => e.isStarred) ? 'currentColor' : 'none'"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        @click="emit('delete', thread.emails[thread.emails.length - 1].id)"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </Button>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="ghost" size="icon">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <circle cx="12" cy="12" r="1" />
+                                    <circle cx="12" cy="5" r="1" />
+                                    <circle cx="12" cy="19" r="1" />
+                                </svg>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" side="top">
+                            <DropdownMenuItem>Mark as unread</DropdownMenuItem>
+                            <DropdownMenuItem>Move to folder</DropdownMenuItem>
+                            <DropdownMenuItem>Add label</DropdownMenuItem>
+                            <DropdownMenuItem>Print</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </div>
     </div>
