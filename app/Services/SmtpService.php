@@ -23,10 +23,17 @@ class SmtpService
             $tokenService = app(OAuthTokenService::class);
             $accessToken = $tokenService->refreshIfNeeded($account);
 
+            // true = implicit SSL (port 465), null = STARTTLS (port 587), false = none
+            $tls = match ($account->smtp_encryption) {
+                'ssl' => true,
+                'tls' => null,
+                default => false,
+            };
+
             $transport = new EsmtpTransport(
                 $account->smtp_host,
                 $account->smtp_port,
-                $account->smtp_encryption === 'tls',
+                $tls,
             );
             $transport->setUsername($account->smtp_username ?: $account->email);
             $transport->setPassword($accessToken);

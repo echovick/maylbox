@@ -84,9 +84,22 @@ class ImapSyncService
             return 0;
         }
 
+        // Skip non-selectable folders (e.g. [Gmail] parent container)
+        if ($imapFolder->no_select ?? false) {
+            return 0;
+        }
+
         $maxStoredUid = Email::where('folder_id', $folder->id)->max('uid');
 
-        $query = $imapFolder->query()->all();
+        try {
+            $query = $imapFolder->query()->all();
+        } catch (\Exception $e) {
+            // Folder may not be selectable — skip gracefully
+            logger()->debug("Skipping non-selectable folder: {$folder->remote_name}", [
+                'error' => $e->getMessage(),
+            ]);
+            return 0;
+        }
 
         if ($maxStoredUid) {
             // Incremental sync: fetch messages with UID > max stored

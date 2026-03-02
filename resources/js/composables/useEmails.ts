@@ -468,6 +468,7 @@ export function useEmails() {
     }
 
     async function setCurrentAccount(accountId: string) {
+        stopPolling();
         currentAccountId.value = accountId;
         localStorage.setItem('maylbox_active_account', accountId);
         selectedEmailId.value = null;
@@ -620,16 +621,31 @@ export function useEmails() {
         }
     }
 
-    let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let isPolling = false;
+
+    function stopPolling(): void {
+        if (pollTimer) {
+            clearTimeout(pollTimer);
+            pollTimer = null;
+        }
+        isPolling = false;
+    }
 
     function pollSyncStatus(): void {
-        if (pollTimer) clearInterval(pollTimer);
+        stopPolling();
 
-        pollTimer = setInterval(async () => {
-            if (!currentAccountId.value) return;
+        const accountId = currentAccountId.value;
+        if (!accountId) return;
+
+        isPolling = true;
+
+        async function poll() {
+            // Stop if account changed or polling was cancelled
+            if (!isPolling || currentAccountId.value !== accountId) return;
 
             try {
-                const res = await fetch(`/api/email-accounts/${currentAccountId.value}/sync-status`, {
+                const res = await fetch(`/api/email-accounts/${accountId}/sync-status`, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 });
                 if (!res.ok) return;
@@ -638,21 +654,29 @@ export function useEmails() {
                 syncError.value = data.sync_error;
 
                 if (data.sync_status === 'synced' || data.sync_status === 'failed') {
-                    if (pollTimer) clearInterval(pollTimer);
+                    isPolling = false;
                     pollTimer = null;
 
                     // Auto-refresh folder list + emails on completion
                     if (data.sync_status === 'synced') {
-                        await fetchFolders(currentAccountId.value);
+                        await fetchFolders(accountId);
                         if (currentFolderId.value) {
-                            await fetchEmails(currentAccountId.value, currentFolderId.value, currentPage.value);
+                            await fetchEmails(accountId, currentFolderId.value, currentPage.value);
                         }
                     }
+                    return;
                 }
             } catch {
                 // Silently ignore poll errors
             }
-        }, 2000);
+
+            // Schedule next poll only after this one completes
+            if (isPolling && currentAccountId.value === accountId) {
+                pollTimer = setTimeout(poll, 3000);
+            }
+        }
+
+        pollTimer = setTimeout(poll, 3000);
     }
 
     // --- Pagination ---
