@@ -50,6 +50,7 @@ const providers = [
         id: 'outlook',
         name: 'Outlook',
         type: 'oauth' as const,
+        comingSoon: true,
         viewBox: '0 0 24 24',
         paths: [
             { d: 'M11.4 24H0V12.6h11.4V24z', fill: '#F25022' },
@@ -62,10 +63,10 @@ const providers = [
         id: 'yahoo',
         name: 'Yahoo',
         type: 'imap' as const,
-        viewBox: '0 0 24 24',
+        comingSoon: true,
+        viewBox: '0 0 30 30',
         paths: [
-            { d: 'M14.54 8.83l3.32-7.6h-3.06l-1.98 4.87L10.9 1.23H7.7l3.44 7.6-.1 2.66v4.28h3.4v-4.28l.1-2.66z', fill: '#6001D2' },
-            { d: 'M20.23 1.23h-2.96l-1.5 3.6 1.68 3.89 2.78-7.49zM5.07 18.77a2.12 2.12 0 100 4.24 2.12 2.12 0 000-4.24z', fill: '#6001D2' },
+            { d: 'M24.31 4.5h-3.71l-1.88 4.5-2.1-4.5H12.7l4.23 8.37V18h4.02v-5.13L24.31 4.5zM8.16 21.08a2.65 2.65 0 100 5.3 2.65 2.65 0 000-5.3z', fill: '#6001D2' },
         ],
         imapDefaults: { host: 'imap.mail.yahoo.com', port: 993 },
         smtpDefaults: { host: 'smtp.mail.yahoo.com', port: 587 },
@@ -75,6 +76,7 @@ const providers = [
         id: 'icloud',
         name: 'iCloud',
         type: 'imap' as const,
+        comingSoon: true,
         viewBox: '0 0 24 24',
         paths: [
             { d: 'M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z', fill: '#A3AAAE' },
@@ -200,9 +202,21 @@ const passwordLabel = () => {
                         <button
                             v-for="provider in providers"
                             :key="provider.id"
-                            class="flex flex-col items-center gap-3 rounded-lg border p-5 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            @click="selectProvider(provider.id)"
+                            :disabled="provider.comingSoon"
+                            :class="[
+                                'relative flex flex-col items-center gap-3 rounded-lg border p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                                provider.comingSoon
+                                    ? 'cursor-not-allowed opacity-50'
+                                    : 'hover:bg-muted/50',
+                            ]"
+                            @click="!provider.comingSoon && selectProvider(provider.id)"
                         >
+                            <span
+                                v-if="provider.comingSoon"
+                                class="absolute right-2 top-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                            >
+                                Coming soon
+                            </span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 :viewBox="provider.viewBox"
