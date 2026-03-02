@@ -252,9 +252,8 @@ defineProps<{
                     </div>
                     <!-- Yahoo -->
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-8 w-8" viewBox="0 0 24 24">
-                            <path d="M14.54 8.83l3.32-7.6h-3.06l-1.98 4.87L10.9 1.23H7.7l3.44 7.6-.1 2.66v4.28h3.4v-4.28l.1-2.66z" fill="#6001D2" />
-                            <path d="M20.23 1.23h-2.96l-1.5 3.6 1.68 3.89 2.78-7.49zM5.07 18.77a2.12 2.12 0 100 4.24 2.12 2.12 0 000-4.24z" fill="#6001D2" />
+                        <svg class="h-8 w-8" viewBox="0 0 30 30">
+                            <path d="M24.31 4.5h-3.71l-1.88 4.5-2.1-4.5H12.7l4.23 8.37V18h4.02v-5.13L24.31 4.5zM8.16 21.08a2.65 2.65 0 100 5.3 2.65 2.65 0 000-5.3z" fill="#6001D2" />
                         </svg>
                         <span class="text-xs font-medium text-gray-600 dark:text-gray-300">Yahoo</span>
                     </div>
