@@ -256,9 +256,15 @@ export function useEmails() {
 
         accounts.value = accountProps;
 
-        const accountId = defaultAccountId
-            ? String(defaultAccountId)
-            : String(accountProps[0]?.id || '');
+        // Restore last active account from localStorage, fall back to default
+        const savedAccountId = localStorage.getItem('maylbox_active_account');
+        const savedAccountExists = savedAccountId && accountProps.some(a => String(a.id) === savedAccountId);
+
+        const accountId = savedAccountExists
+            ? savedAccountId
+            : defaultAccountId
+                ? String(defaultAccountId)
+                : String(accountProps[0]?.id || '');
 
         if (!accountId) return;
 
@@ -463,6 +469,7 @@ export function useEmails() {
 
     async function setCurrentAccount(accountId: string) {
         currentAccountId.value = accountId;
+        localStorage.setItem('maylbox_active_account', accountId);
         selectedEmailId.value = null;
         threadEmailsCache.value = [];
         currentPage.value = 1;
