@@ -1,23 +1,13 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Mail } from 'lucide-vue-next';
-import { defineAsyncComponent } from 'vue';
 import TextLink from '@/components/TextLink.vue';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
-
-const RegisterForm = defineAsyncComponent(() => import('./RegisterForm.vue'));
-
-defineProps<{
-    canRegister?: boolean;
-    socialProviders?: string[];
-}>();
 </script>
 
 <template>
-    <!-- Closed Beta Message -->
     <AuthBase
-        v-if="!canRegister"
         title="Closed Beta"
         description="Maylbox is currently in closed beta"
     >
@@ -57,15 +47,5 @@ defineProps<{
                 >Log in</TextLink>
             </div>
         </div>
-    </AuthBase>
-
-    <!-- Registration Form (lazy-loaded to avoid importing @/routes/register when registration is disabled) -->
-    <AuthBase
-        v-else
-        title="Create an account"
-        description="Get started with your email in under 60 seconds"
-    >
-        <Head title="Register" />
-        <RegisterForm :social-providers="socialProviders" />
     </AuthBase>
 </template>
