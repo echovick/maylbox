@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
-import { store } from '@/routes/register';
+// TODO: Re-enable when registration is open
+// import { store } from '@/routes/register';
+const store = { form: () => ({ method: 'post' as const, action: '/register' }) };
 
 defineProps<{
     socialProviders?: string[];
