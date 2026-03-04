@@ -144,7 +144,7 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Features::registration(), // Disabled for closed beta
         Features::resetPasswords(),
         // Features::emailVerification(), // Disabled for faster onboarding
         Features::twoFactorAuthentication([

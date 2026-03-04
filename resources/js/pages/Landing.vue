@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 defineProps<{
-    canRegister: boolean;
+    canRegister?: boolean;
 }>();
 </script>
 
@@ -53,8 +53,8 @@ defineProps<{
                     <Link href="/login" class="text-sm text-gray-600 transition hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
                         Log in
                     </Link>
-                    <Link v-if="canRegister" href="/register">
-                        <Button size="sm">Get Maylbox Free</Button>
+                    <Link href="/register">
+                        <Button size="sm">Request Beta Access</Button>
                     </Link>
                 </div>
             </div>
@@ -76,9 +76,9 @@ defineProps<{
                     Connect Gmail, Outlook, Yahoo, or any email provider in 60 seconds.
                     AI-powered organization, smart compose, and a modern interface that just works.
                 </p>
-                <Link v-if="canRegister" href="/register">
+                <Link href="/register">
                     <Button size="lg" class="gap-2 px-8 text-base">
-                        Get Started Free
+                        Request Beta Access
                         <ArrowRight class="h-4 w-4" />
                     </Button>
                 </Link>
@@ -287,8 +287,8 @@ defineProps<{
                     <!-- Step 1 -->
                     <div class="text-center">
                         <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</div>
-                        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">Create your account</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Sign up for free in seconds. No credit card required.</p>
+                        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">Request beta access</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Email us to join the closed beta. We'll get you set up quickly.</p>
                     </div>
                     <!-- Connector -->
                     <div class="hidden items-center md:flex">
@@ -704,9 +704,9 @@ defineProps<{
                         <img src="/assets/imgs/maylbox-logo-icon.png" alt="Maylbox" class="h-8 w-auto" />
                     </div>
                 </div>
-                <Link v-if="canRegister" href="/register">
+                <Link href="/register">
                     <Button size="lg" class="gap-2 px-8">
-                        Get Started Free
+                        Request Beta Access
                         <ArrowRight class="h-4 w-4" />
                     </Button>
                 </Link>
