@@ -14,6 +14,13 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Closed beta: show beta access page when registration is disabled
+if (!Features::enabled(Features::registration())) {
+    Route::get('register', function () {
+        return Inertia::render('auth/Register');
+    })->middleware('guest')->name('register');
+}
+
 Route::get('dashboard', function () {
     return redirect()->route('mail');
 })->middleware(['auth', 'verified'])->name('dashboard');
